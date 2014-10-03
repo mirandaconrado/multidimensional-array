@@ -14,11 +14,10 @@ namespace MultidimensionalArray {
 
   template <class T>
   Array<T>::Array(Array<T> const& other):
-    Array() {
-      total_size_ = other.total_size_;
-      size_ = other.size_;
-      deallocate_on_destruction_ = other.deallocate_on_destruction_;
-
+    total_size_(other.total_size_),
+    size_(other.size_),
+    values_(nullptr),
+    deallocate_on_destruction_(other.deallocate_on_destruction_) {
       if (other.deallocate_on_destruction_) {
         if (total_size_ > 0) {
           values_ = new T[total_size_];
@@ -33,13 +32,23 @@ namespace MultidimensionalArray {
 
   template <class T>
   Array<T>::Array(Array<T>&& other):
-    Array() {
-      total_size_ = other.total_size_;
-      size_.swap(other.size_);
-      values_ = other.values_;
-      deallocate_on_destruction_ = other.deallocate_on_destruction_;
-
+    total_size_(std::move(other.total_size_)),
+    size_(std::move(other.size_)),
+    values_(std::move(other.values_)),
+    deallocate_on_destruction_(std::move(other.deallocate_on_destruction_)) {
       other.values_ = nullptr;
+    }
+
+  template <class T>
+  Array<T>::Array(ConstArray<T> const& other):
+    total_size_(other.total_size_),
+    size_(other.size_),
+    values_(nullptr),
+    deallocate_on_destruction_(true) {
+      if (total_size_ > 0) {
+        values_ = new T[total_size_];
+        copy(other.values_);
+      }
     }
 
   template <class T>
@@ -89,6 +98,7 @@ namespace MultidimensionalArray {
 
   template <class T>
   void Array<T>::copy(T const* other) {
+    assert(values_ != nullptr);
     for (size_t i = 0; i < total_size_; i++)
       values_[i] = other[i];
   }
@@ -96,6 +106,7 @@ namespace MultidimensionalArray {
   template <class T>
   template <class T2>
   void Array<T>::copy(T2 const* other) {
+    assert(values_ != nullptr);
     for (size_t i = 0; i < total_size_; i++)
       values_[i] = other[i];
   }
@@ -167,6 +178,7 @@ namespace MultidimensionalArray {
   template <class T>
   template <class... Args>
   T& Array<T>::operator()(Args const&... args) {
+    assert(values_ != nullptr);
     assert(sizeof...(args) == size_.size());
     unsigned int indexes[] = {static_cast<SizeType::value_type>(args)...};
     assert(check_index(indexes));
@@ -183,6 +195,7 @@ namespace MultidimensionalArray {
   template <class T>
   template <class... Args>
   T const& Array<T>::operator()(Args const&... args) const {
+    assert(values_ != nullptr);
     assert(sizeof...(args) == size_.size());
     unsigned int indexes[] = {static_cast<SizeType::value_type>(args)...};
     assert(check_index(indexes));

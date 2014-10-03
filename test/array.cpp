@@ -103,6 +103,17 @@ TEST_F(ArrayTest, CopyConstructor) {
   EXPECT_NE(array.get_pointer(), array2.get_pointer());
 }
 
+TEST_F(ArrayTest, CopyConstructorFromConstArray) {
+  MultidimensionalArray::ConstArray<int> array(sizes, values);
+  MultidimensionalArray::Array<int> array2(array);
+
+  check_values(array.get_pointer());
+  check_values(array2.get_pointer());
+  check_sizes(array.get_size());
+  check_sizes(array2.get_size());
+  EXPECT_NE(array.get_pointer(), array2.get_pointer());
+}
+
 TEST_F(ArrayTest, CopyConstructorWithDifferentType) {
   MultidimensionalArray::Array<int> array(sizes, values);
   MultidimensionalArray::Array<float> array2(array);

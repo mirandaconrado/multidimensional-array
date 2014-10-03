@@ -1,10 +1,12 @@
 #ifndef __MULTIDIMENSIONAL_ARRAY__ARRAY_HPP__
 #define __MULTIDIMENSIONAL_ARRAY__ARRAY_HPP__
 
-#include <cstdlib>
-#include <vector>
+#include "const_array.hpp"
 
 namespace MultidimensionalArray {
+  template <class T>
+  class ConstArray;
+
   template <class T>
   class Slice;
 
@@ -19,6 +21,8 @@ namespace MultidimensionalArray {
       Array(Array<T>&& other);
       template <class T2>
       Array(Array<T2> const& other);
+
+      Array(ConstArray<T> const& other);
 
       Array(SizeType const& size);
       Array(SizeType const& size, T const* other);
@@ -51,6 +55,7 @@ namespace MultidimensionalArray {
       T const& operator()(Args const&... args) const;
 
     private:
+      friend class ConstArray<T>;
       friend class Slice<T>;
 
       void cleanup();
