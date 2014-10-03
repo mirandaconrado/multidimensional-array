@@ -13,7 +13,7 @@ namespace MultidimensionalArray {
     deallocate_on_destruction_(true) { }
 
   template <class T>
-  Array<T>::Array(Array<T> const& other):
+  Array<T>::Array(Array const& other):
     total_size_(other.total_size_),
     size_(other.size_),
     values_(nullptr),
@@ -31,7 +31,7 @@ namespace MultidimensionalArray {
     }
 
   template <class T>
-  Array<T>::Array(Array<T>&& other):
+  Array<T>::Array(Array&& other):
     total_size_(std::move(other.total_size_)),
     size_(std::move(other.size_)),
     values_(std::move(other.values_)),
@@ -112,7 +112,7 @@ namespace MultidimensionalArray {
   }
 
   template <class T>
-  Array<T> const& Array<T>::operator=(Array<T> const& other) {
+  Array<T> const& Array<T>::operator=(Array const& other) {
     assert(same_size(other.size_));
 
     copy(other.values_);
@@ -120,7 +120,7 @@ namespace MultidimensionalArray {
   }
 
   template <class T>
-  Array<T> const& Array<T>::operator=(Array<T>&& other) {
+  Array<T> const& Array<T>::operator=(Array&& other) {
     assert(same_size(other.size_));
 
     if (values_ != nullptr)

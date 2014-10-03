@@ -17,8 +17,8 @@ namespace MultidimensionalArray {
 
       Array();
 
-      Array(Array<T> const& other);
-      Array(Array<T>&& other);
+      Array(Array const& other);
+      Array(Array&& other);
       template <class T2>
       Array(Array<T2> const& other);
 
@@ -35,10 +35,10 @@ namespace MultidimensionalArray {
       template <class T2>
       void copy(T2 const* other);
 
-      Array<T> const& operator=(Array<T> const& other);
-      Array<T> const& operator=(Array<T>&& other);
+      Array const& operator=(Array const& other);
+      Array const& operator=(Array&& other);
       template <class T2>
-      Array<T> const& operator=(Array<T2> const& other);
+      Array const& operator=(Array<T2> const& other);
 
       bool resize(SizeType const& size, bool allow_allocation = true);
 
