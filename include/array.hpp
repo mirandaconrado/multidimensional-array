@@ -17,14 +17,14 @@ namespace MultidimensionalArray {
 
       Array();
 
-      explicit Array(Array const& other);
-      explicit Array(Array&& other);
+      Array(Array const& other);
+      Array(Array&& other);
       template <class T2>
-      explicit Array(Array<T2> const& other);
+      Array(Array<T2> const& other);
 
-      explicit Array(ConstArray<T> const& other);
+      Array(ConstArray<T> const& other);
 
-      explicit Array(SizeType const& size);
+      Array(SizeType const& size);
       Array(SizeType const& size, T const* other);
       template <class T2>
       Array(SizeType const& size, T2 const* other);

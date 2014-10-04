@@ -18,13 +18,13 @@ namespace MultidimensionalArray {
 
       ConstArray();
 
-      explicit ConstArray(ConstArray const& other);
-      explicit ConstArray(ConstArray&& other);
+      ConstArray(ConstArray const& other);
+      ConstArray(ConstArray&& other);
 
-      explicit ConstArray(Array<T> const& other);
-      explicit ConstArray(Array<T>&& other);
+      ConstArray(Array<T> const& other);
+      ConstArray(Array<T>&& other);
 
-      explicit ConstArray(SizeType const& size);
+      ConstArray(SizeType const& size);
       ConstArray(SizeType const& size, T const* ptr,
           bool responsible_for_deleting = false);
 
