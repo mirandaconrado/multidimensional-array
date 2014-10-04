@@ -1,5 +1,4 @@
 #include "const_array.hpp"
-#include "array.hpp"
 
 #include <gtest/gtest.h>
 
