@@ -13,9 +13,15 @@ namespace MultidimensionalArray {
       View const& operator=(Array<T> const& other);
       template <class T2>
       View const& operator=(Array<T2> const& other);
+      View const& operator=(ConstArray<T> const& other);
+      template <class T2>
+      View const& operator=(ConstArray<T2> const& other);
       View const& operator=(View const& other);
       template <class T2>
       View const& operator=(View<T2> const& other);
+      View const& operator=(ConstView<T> const& other);
+      template <class T2>
+      View const& operator=(ConstView<T2> const& other);
 
       template <class... Args>
       T& operator()(Args const&... args);
@@ -36,6 +42,9 @@ namespace MultidimensionalArray {
       friend class Array<T>;
 
       View(Array<T>& array);
+
+      template <class T2>
+      void copy(T2 const& other);
 
       bool same_size(typename Array<T>::SizeType const& other_size) const;
       bool check_index(unsigned int const indexes[]) const;

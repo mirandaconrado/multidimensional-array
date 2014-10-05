@@ -1,11 +1,15 @@
 #ifndef __MULTIDIMENSIONAL_ARRAY__ARRAY_HPP__
 #define __MULTIDIMENSIONAL_ARRAY__ARRAY_HPP__
 
-#include "const_array.hpp"
+#include <cstdlib>
+#include <vector>
 
 namespace MultidimensionalArray {
   template <class T>
   class ConstArray;
+
+  template <class T>
+  class ConstView;
 
   template <class T>
   class Slice;
@@ -26,6 +30,16 @@ namespace MultidimensionalArray {
       Array(Array<T2> const& other);
 
       Array(ConstArray<T> const& other);
+      template <class T2>
+      Array(ConstArray<T2> const& other);
+
+      Array(View<T> const& other);
+      template <class T2>
+      Array(View<T2> const& other);
+
+      Array(ConstView<T> const& other);
+      template <class T2>
+      Array(ConstView<T2> const& other);
 
       Array(SizeType const& size);
       Array(SizeType const& size, T const* other);
@@ -42,9 +56,15 @@ namespace MultidimensionalArray {
       Array const& operator=(Array&& other);
       template <class T2>
       Array const& operator=(Array<T2> const& other);
+      Array const& operator=(ConstArray<T> const& other);
+      template <class T2>
+      Array const& operator=(ConstArray<T2> const& other);
       Array const& operator=(View<T> const& other);
       template <class T2>
       Array const& operator=(View<T2> const& other);
+      Array const& operator=(ConstView<T> const& other);
+      template <class T2>
+      Array const& operator=(ConstView<T2> const& other);
 
       View<T> view();
 

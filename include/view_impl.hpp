@@ -5,8 +5,6 @@
 
 #include <cassert>
 
-#include <stdio.h>
-
 namespace MultidimensionalArray {
   template <class T>
   View<T>::View(View const& other):
@@ -30,6 +28,7 @@ namespace MultidimensionalArray {
 
   template <class T>
   View<T> const& View<T>::operator=(Array<T> const& other) {
+    assert(same_size(other.get_size()));
     *this = other.view();
     return *this;
   }
@@ -37,6 +36,22 @@ namespace MultidimensionalArray {
   template <class T>
   template <class T2>
   View<T> const& View<T>::operator=(Array<T2> const& other) {
+    assert(same_size(other.get_size()));
+    *this = other.view();
+    return *this;
+  }
+
+  template <class T>
+  View<T> const& View<T>::operator=(ConstArray<T> const& other) {
+    assert(same_size(other.get_size()));
+    *this = other.view();
+    return *this;
+  }
+
+  template <class T>
+  template <class T2>
+  View<T> const& View<T>::operator=(ConstArray<T2> const& other) {
+    assert(same_size(other.get_size()));
     *this = other.view();
     return *this;
   }
@@ -44,30 +59,7 @@ namespace MultidimensionalArray {
   template <class T>
   View<T> const& View<T>::operator=(View const& other) {
     assert(same_size(other.get_size()));
-
-    unsigned int indexes[size_.size()];
-    for (unsigned int i = 0; i < size_.size(); i++)
-      indexes[i] = 0;
-
-    while (1) {
-      get_value(indexes) = other.get_value(indexes);
-
-      unsigned int i = 0;
-      while (i < size_.size()) {
-        indexes[i]++;
-        if (indexes[i] == size_[i]) {
-          indexes[i] = 0;
-          i++;
-        }
-        else {
-          i = 0;
-          break;
-        }
-      }
-      if (i == size_.size())
-        break;
-    }
-
+    copy(other);
     return *this;
   }
 
@@ -75,30 +67,22 @@ namespace MultidimensionalArray {
   template <class T2>
   View<T> const& View<T>::operator=(View<T2> const& other) {
     assert(same_size(other.get_size()));
+    copy(other);
+    return *this;
+  }
 
-    unsigned int indexes[size_.size()];
-    for (unsigned int i = 0; i < size_.size(); i++)
-      indexes[i] = 0;
+  template <class T>
+  View<T> const& View<T>::operator=(ConstView<T> const& other) {
+    assert(same_size(other.get_size()));
+    copy(other);
+    return *this;
+  }
 
-    while (1) {
-      get_value(indexes) = other.get_value(indexes);
-
-      unsigned int i = 0;
-      while (i < size_.size()) {
-        indexes[i]++;
-        if (indexes[i] == size_[i]) {
-          indexes[i] = 0;
-          i++;
-        }
-        else {
-          i = 0;
-          break;
-        }
-      }
-      if (i == size_.size())
-        break;
-    }
-
+  template <class T>
+  template <class T2>
+  View<T> const& View<T>::operator=(ConstView<T2> const& other) {
+    assert(same_size(other.get_size()));
+    copy(other);
     return *this;
   }
 
@@ -249,6 +233,33 @@ namespace MultidimensionalArray {
       for (unsigned int i = 0; i < size_.size(); i++)
         dimension_map_[i] = i;
     }
+
+  template <class T>
+  template <class T2>
+  void View<T>::copy(T2 const& other) {
+    unsigned int indexes[size_.size()];
+    for (unsigned int i = 0; i < size_.size(); i++)
+      indexes[i] = 0;
+
+    while (1) {
+      get_value(indexes) = other.get_value(indexes);
+
+      unsigned int i = 0;
+      while (i < size_.size()) {
+        indexes[i]++;
+        if (indexes[i] == size_[i]) {
+          indexes[i] = 0;
+          i++;
+        }
+        else {
+          i = 0;
+          break;
+        }
+      }
+      if (i == size_.size())
+        break;
+    }
+  }
 
   template <class T>
   bool View<T>::same_size(typename Array<T>::SizeType const& other_size) const {
