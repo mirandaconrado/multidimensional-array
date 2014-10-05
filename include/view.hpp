@@ -45,6 +45,8 @@ namespace MultidimensionalArray {
 
       template <class T2>
       void copy(T2 const& other);
+      template <class T2>
+      void copy(T2 const* other);
 
       bool same_size(typename Array<T>::SizeType const& other_size) const;
       bool check_index(unsigned int const indexes[]) const;
