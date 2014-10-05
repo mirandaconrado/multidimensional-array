@@ -11,6 +11,9 @@ namespace MultidimensionalArray {
   class Slice;
 
   template <class T>
+  class View;
+
+  template <class T>
   class Array {
     public:
       typedef std::vector<unsigned int> SizeType;
@@ -39,6 +42,11 @@ namespace MultidimensionalArray {
       Array const& operator=(Array&& other);
       template <class T2>
       Array const& operator=(Array<T2> const& other);
+      Array const& operator=(View<T> const& other);
+      template <class T2>
+      Array const& operator=(View<T2> const& other);
+
+      View<T> view();
 
       bool resize(SizeType const& size, bool allow_allocation = true);
 
@@ -61,7 +69,6 @@ namespace MultidimensionalArray {
       void cleanup();
 
       bool same_size(SizeType const& other_size) const;
-      bool check_index(SizeType const& indexes) const;
       bool check_index(unsigned int const indexes[]) const;
 
       size_t total_size_;

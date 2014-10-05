@@ -2,6 +2,7 @@
 #define __MULTIDIMENSIONAL_ARRAY__ARRAY_IMPL_HPP__
 
 #include "array.hpp"
+#include "view.hpp"
 
 #include <cassert>
 
@@ -141,6 +142,24 @@ namespace MultidimensionalArray {
   }
 
   template <class T>
+  Array<T> const& Array<T>::operator=(View<T> const& other) {
+    view() = other;
+    return *this;
+  }
+
+  template <class T>
+  template <class T2>
+  Array<T> const& Array<T>::operator=(View<T2> const& other) {
+    view() = other;
+    return *this;
+  }
+
+  template <class T>
+  View<T> Array<T>::view() {
+    return View<T>(*this);
+  }
+
+  template <class T>
   bool Array<T>::resize(SizeType const& size, bool allow_allocation) {
     size_t new_total_size = 1;
     for (auto v : size)
@@ -227,18 +246,6 @@ namespace MultidimensionalArray {
 
     for (unsigned int i = 0; i < size_.size(); i++)
       if (size_[i] != other_size[i])
-        return false;
-
-    return true;
-  }
-
-  template <class T>
-  bool Array<T>::check_index(SizeType const& indexes) const {
-    if (size_.size() != indexes.size())
-      return false;
-
-    for (unsigned int i = 0; i < size_.size(); i++)
-      if (indexes[i] >= size_[i])
         return false;
 
     return true;
