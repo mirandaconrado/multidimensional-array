@@ -11,7 +11,7 @@ class SliceTest: public ::testing::Test {
 
     virtual void SetUp() {
       sizes = std::vector<unsigned int>({2, 3, 4, 5});
-      values = new int[2*3*4*5*6];
+      values = new int[2*3*4*5];
       unsigned int index = 0;
       for (int i1 = 0; i1 < 2; i1++)
         for (int i2 = 0; i2 < 3; i2++)
