@@ -89,6 +89,8 @@ TEST_F(ViewTest, Basic) {
   MultidimensionalArray::Array<int> array(sizes, values);
   MultidimensionalArray::View<int> view(array.view());
 
+  check_sizes(view.get_size(), {2, 3, 4, 5, 6, 7});
+
   unsigned int index = 0;
   for (int i1 = 0; i1 < 2; i1++)
     for (int i2 = 0; i2 < 3; i2++)
@@ -106,6 +108,8 @@ TEST_F(ViewTest, Begin) {
   MultidimensionalArray::View<int> view(array.view().set_range_begin(2, 3).
       set_range_begin(3, 2).set_range_begin(4, 1));
 
+  check_sizes(view.get_size(), {2, 3, 1, 3, 5, 7});
+
   for (int i1 = 0; i1 < 2; i1++)
     for (int i2 = 0; i2 < 3; i2++)
       for (int i3 = 3; i3 < 4; i3++)
@@ -121,6 +125,8 @@ TEST_F(ViewTest, End) {
   MultidimensionalArray::View<int> view(array.view().set_range_end(2, 3).
       set_range_end(3, 2).set_range_end(4, 1));
 
+  check_sizes(view.get_size(), {2, 3, 3, 2, 1, 7});
+
   for (int i1 = 0; i1 < 2; i1++)
     for (int i2 = 0; i2 < 3; i2++)
       for (int i3 = 0; i3 < 3; i3++)
@@ -134,6 +140,8 @@ TEST_F(ViewTest, End) {
 TEST_F(ViewTest, Fix) {
   MultidimensionalArray::Array<int> array(sizes, values);
   MultidimensionalArray::View<int> view(array.view().fix_dimension(3, 2));
+
+  check_sizes(view.get_size(), {2, 3, 4, 6, 7});
 
   for (int i1 = 0; i1 < 2; i1++)
     for (int i2 = 0; i2 < 3; i2++)
@@ -150,6 +158,8 @@ TEST_F(ViewTest, Mixed) {
   MultidimensionalArray::View<int> view(array.view().set_range_begin(2, 3).
       set_range_end(3, 2).set_range_stride(4, 2));
 
+  check_sizes(view.get_size(), {2, 3, 1, 2, 3, 7});
+
   for (int i1 = 0; i1 < 2; i1++)
     for (int i2 = 0; i2 < 3; i2++)
       for (int i3 = 3; i3 < 4; i3++)
@@ -165,6 +175,8 @@ TEST_F(ViewTest, FullMixed) {
   MultidimensionalArray::View<int> view(array.view().set_range_begin(5, 1).
       set_range_stride(5, 2).set_range_end(5, 2));
 
+  check_sizes(view.get_size(), {2, 3, 4, 5, 6, 2});
+
   for (int i1 = 0; i1 < 2; i1++)
     for (int i2 = 0; i2 < 3; i2++)
       for (int i3 = 0; i3 < 4; i3++)
@@ -179,6 +191,8 @@ TEST_F(ViewTest, Stride) {
   MultidimensionalArray::Array<int> array(sizes, values);
   MultidimensionalArray::View<int> view(array.view().set_range_stride(2, 3).
       set_range_stride(3, 2));
+
+  check_sizes(view.get_size(), {2, 3, 2, 3, 6, 7});
 
   for (int i1 = 0; i1 < 2; i1++)
     for (int i2 = 0; i2 < 3; i2++)
