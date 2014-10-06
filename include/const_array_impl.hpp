@@ -69,6 +69,11 @@ namespace MultidimensionalArray {
   }
 
   template <class T>
+  ConstView<T> ConstArray<T>::view() {
+    return ConstView<T>(*this);
+  }
+
+  template <class T>
   bool ConstArray<T>::resize(SizeType const& size) {
     size_t new_total_size = 1;
     for (auto v : size)

@@ -12,6 +12,9 @@ namespace MultidimensionalArray {
   class ConstSlice;
 
   template <class T>
+  class ConstView;
+
+  template <class T>
   class ConstArray {
     public:
       typedef std::vector<unsigned int> SizeType;
@@ -29,6 +32,8 @@ namespace MultidimensionalArray {
           bool responsible_for_deleting = false);
 
       ~ConstArray();
+
+      ConstView<T> view();
 
       bool resize(SizeType const& size);
 
