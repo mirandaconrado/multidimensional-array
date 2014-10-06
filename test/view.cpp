@@ -38,19 +38,51 @@ class ViewTest: public ::testing::Test {
 
 TEST_F(ViewTest, AssignmentOperator) {
   MultidimensionalArray::Array<float> array(sizes, values);
-  MultidimensionalArray::Array<int> array2(sizes);
 
-  array2 = array.view();
-  unsigned int index = 0;
-  for (int i1 = 0; i1 < 2; i1++)
-    for (int i2 = 0; i2 < 3; i2++)
-      for (int i3 = 0; i3 < 4; i3++)
-        for (int i4 = 0; i4 < 5; i4++)
-          for (int i5 = 0; i5 < 6; i5++)
-            for (int i6 = 0; i6 < 7; i6++) {
-              EXPECT_EQ(index, array2(i1, i2, i3, i4, i5, i6));
-              index++;
-            }
+  {
+    MultidimensionalArray::Array<int> array2(sizes);
+    array2.view() = array;
+    unsigned int index = 0;
+    for (int i1 = 0; i1 < 2; i1++)
+      for (int i2 = 0; i2 < 3; i2++)
+        for (int i3 = 0; i3 < 4; i3++)
+          for (int i4 = 0; i4 < 5; i4++)
+            for (int i5 = 0; i5 < 6; i5++)
+              for (int i6 = 0; i6 < 7; i6++) {
+                ASSERT_EQ(index, array2(i1, i2, i3, i4, i5, i6));
+                index++;
+              }
+  }
+
+  {
+    MultidimensionalArray::Array<int> array2(sizes);
+    array2.view() = array.view();
+    unsigned int index = 0;
+    for (int i1 = 0; i1 < 2; i1++)
+      for (int i2 = 0; i2 < 3; i2++)
+        for (int i3 = 0; i3 < 4; i3++)
+          for (int i4 = 0; i4 < 5; i4++)
+            for (int i5 = 0; i5 < 6; i5++)
+              for (int i6 = 0; i6 < 7; i6++) {
+                ASSERT_EQ(index, array2(i1, i2, i3, i4, i5, i6));
+                index++;
+              }
+  }
+
+  {
+    MultidimensionalArray::Array<int> array2(sizes);
+    array2 = array.view();
+    unsigned int index = 0;
+    for (int i1 = 0; i1 < 2; i1++)
+      for (int i2 = 0; i2 < 3; i2++)
+        for (int i3 = 0; i3 < 4; i3++)
+          for (int i4 = 0; i4 < 5; i4++)
+            for (int i5 = 0; i5 < 6; i5++)
+              for (int i6 = 0; i6 < 7; i6++) {
+                ASSERT_EQ(index, array2(i1, i2, i3, i4, i5, i6));
+                index++;
+              }
+  }
 }
 
 TEST_F(ViewTest, Basic) {
