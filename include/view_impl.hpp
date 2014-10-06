@@ -176,6 +176,7 @@ namespace MultidimensionalArray {
     assert(size_[dimension] > value);
 
     View<T> ret(*this);
+    ret.size_[dimension] -= value;
     ret.offset_[dimension_map_[dimension]] +=
       value * gain_[dimension_map_[dimension]];
     return ret;
