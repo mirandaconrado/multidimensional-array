@@ -4,6 +4,7 @@ add_executable(run_tests.bin EXCLUDE_FROM_ALL
   const_slice.cpp
   const_view.cpp
   slice.cpp
+  size.cpp
   view.cpp
 )
 
