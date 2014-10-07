@@ -2,9 +2,6 @@
 #define __MULTIDIMENSIONAL_ARRAY__ARRAY_IMPL_HPP__
 
 #include "array.hpp"
-#include "view.hpp"
-
-#include <cassert>
 
 namespace MultidimensionalArray {
   template <class T>
@@ -81,37 +78,37 @@ namespace MultidimensionalArray {
   template <class T>
   Array<T>::Array(View<T> const& other):
     Array(other.get_size()) {
-      view() = other;
+      *this = other;
     }
 
   template <class T>
   template <class T2>
   Array<T>::Array(View<T2> const& other):
     Array(other.get_size()) {
-      view() = other;
+      *this = other;
     }
 
   template <class T>
   Array<T>::Array(ConstView<T> const& other):
     Array(other.get_size()) {
-      view() = other;
+      *this = other;
     }
 
   template <class T>
   template <class T2>
   Array<T>::Array(ConstView<T2> const& other):
     Array(other.get_size()) {
-      view() = other;
+      *this = other;
     }
 
   template <class T>
-  Array<T>::Array(SizeType const& size):
+  Array<T>::Array(Size const& size):
     Array() {
       size_ = size;
       deallocate_on_destruction_ = true;
 
       total_size_ = 1;
-      for (auto v : size_)
+      for (auto v : size_.get_size())
         total_size_ *= v;
 
       if (total_size_ > 0)
@@ -119,17 +116,30 @@ namespace MultidimensionalArray {
     }
 
   template <class T>
-  Array<T>::Array(SizeType const& size, T const* other):
+  Array<T>::Array(Size const& size, T const* other):
     Array(size) {
       copy(other);
     }
 
   template <class T>
   template <class T2>
-  Array<T>::Array(SizeType const& size, T2 const* other):
+  Array<T>::Array(Size const& size, T2 const* other):
     Array(size) {
       copy(other);
     }
+
+  template <class T>
+  Array<T>::Array(Size::SizeType const& size):
+    Array(Size(size)) { }
+
+  template <class T>
+  Array<T>::Array(Size::SizeType const& size, T const* other):
+    Array(Size(size), other) { }
+
+  template <class T>
+  template <class T2>
+  Array<T>::Array(Size::SizeType const& size, T2 const* other):
+    Array(Size(size), other) { }
 
   template <class T>
   Array<T>::~Array() {
@@ -137,30 +147,15 @@ namespace MultidimensionalArray {
   }
 
   template <class T>
-  void Array<T>::copy(T const* other) {
-    assert(values_ != nullptr);
-    for (size_t i = 0; i < total_size_; i++)
-      values_[i] = other[i];
-  }
-
-  template <class T>
-  template <class T2>
-  void Array<T>::copy(T2 const* other) {
-    assert(values_ != nullptr);
-    for (size_t i = 0; i < total_size_; i++)
-      values_[i] = other[i];
-  }
-
-  template <class T>
   Array<T> const& Array<T>::operator=(Array const& other) {
-    assert(same_size(other.get_size()));
+    assert(size_.same(other.get_size()));
     copy(other.values_);
     return *this;
   }
 
   template <class T>
   Array<T> const& Array<T>::operator=(Array&& other) {
-    assert(same_size(other.get_size()));
+    assert(size_.same(other.get_size()));
 
     if (values_ != nullptr)
       delete[] values_;
@@ -173,14 +168,14 @@ namespace MultidimensionalArray {
   template <class T>
   template <class T2>
   Array<T> const& Array<T>::operator=(Array<T2> const& other) {
-    assert(same_size(other.get_size()));
+    assert(size_.same(other.get_size()));
     copy(other.get_pointer());
     return *this;
   }
 
   template <class T>
   Array<T> const& Array<T>::operator=(ConstArray<T> const& other) {
-    assert(same_size(other.get_size()));
+    assert(size_.same(other.get_size()));
     copy(other.get_pointer());
     return *this;
   }
@@ -188,38 +183,38 @@ namespace MultidimensionalArray {
   template <class T>
   template <class T2>
   Array<T> const& Array<T>::operator=(ConstArray<T2> const& other) {
-    assert(same_size(other.get_size()));
+    assert(size_.same(other.get_size()));
     copy(other.get_pointer());
     return *this;
   }
 
   template <class T>
   Array<T> const& Array<T>::operator=(View<T> const& other) {
-    assert(same_size(other.get_size()));
-    view() = other;
+    assert(size_.same(other.get_size()));
+    copy(other);
     return *this;
   }
 
   template <class T>
   template <class T2>
   Array<T> const& Array<T>::operator=(View<T2> const& other) {
-    assert(same_size(other.get_size()));
-    view() = other;
+    assert(size_.same(other.get_size()));
+    copy(other);
     return *this;
   }
 
   template <class T>
   Array<T> const& Array<T>::operator=(ConstView<T> const& other) {
-    assert(same_size(other.get_size()));
-    view() = other;
+    assert(size_.same(other.get_size()));
+    copy(other);
     return *this;
   }
 
   template <class T>
   template <class T2>
   Array<T> const& Array<T>::operator=(ConstView<T2> const& other) {
-    assert(same_size(other.get_size()));
-    view() = other;
+    assert(size_.same(other.get_size()));
+    copy(other);
     return *this;
   }
 
@@ -229,9 +224,9 @@ namespace MultidimensionalArray {
   }
 
   template <class T>
-  bool Array<T>::resize(SizeType const& size, bool allow_allocation) {
+  bool Array<T>::resize(Size const& size, bool allow_allocation) {
     size_t new_total_size = 1;
-    for (auto v : size)
+    for (auto v : size.get_size())
       new_total_size *= v;
 
     if (new_total_size != total_size_) {
@@ -253,6 +248,11 @@ namespace MultidimensionalArray {
   }
 
   template <class T>
+  bool Array<T>::resize(Size::SizeType const& size, bool allow_allocation) {
+    return resize(Size(size), allow_allocation);
+  }
+
+  template <class T>
   void Array<T>::set_pointer(T* p, bool responsible_for_deleting) {
     if (values_ != nullptr && deallocate_on_destruction_) {
       delete[] values_;
@@ -266,35 +266,78 @@ namespace MultidimensionalArray {
   template <class T>
   template <class... Args>
   T& Array<T>::operator()(Args const&... args) {
-    assert(values_ != nullptr);
-    assert(sizeof...(args) == size_.size());
-    unsigned int indexes[] = {static_cast<SizeType::value_type>(args)...};
-    assert(check_index(indexes));
-
-    size_t position = indexes[0];
-    for (unsigned int i = 0; i < size_.size()-1; i++) {
-      position *= size_[i+1];
-      position += indexes[i+1];
-    }
-
-    return values_[position];
+    return values_[get_position_variadic(args...)];
   }
 
   template <class T>
   template <class... Args>
   T const& Array<T>::operator()(Args const&... args) const {
+    return values_[get_position_variadic(args...)];
+  }
+
+  template <class T>
+  T& Array<T>::get(Size::SizeType const& index) {
+    assert(index.size() == size_.size_.size());
+    return values_[get_position(&index[0])];
+  }
+
+  template <class T>
+  T const& Array<T>::get(Size::SizeType const& index) const {
+    assert(index.size() == size_.size_.size());
+    return values_[get_position(&index[0])];
+  }
+
+  template <class T>
+  template <class... Args>
+  size_t Array<T>::get_position_variadic(Args const&... args) const {
+    assert(sizeof...(args) == size_.size_.size());
+    Size::SizeType::value_type indexes[] =
+    {static_cast<Size::SizeType::value_type>(args)...};
+
+    return get_position(indexes);
+  }
+
+  template <class T>
+  size_t Array<T>::get_position(
+      Size::SizeType::value_type const* indexes) const {
     assert(values_ != nullptr);
-    assert(sizeof...(args) == size_.size());
-    unsigned int indexes[] = {static_cast<SizeType::value_type>(args)...};
-    assert(check_index(indexes));
+    assert(size_.check_index(indexes, size_.size_.size()));
 
     size_t position = indexes[0];
-    for (unsigned int i = 0; i < size_.size()-1; i++) {
+    for (size_t i = 0; i < size_.size_.size()-1; i++) {
       position *= size_[i+1];
       position += indexes[i+1];
     }
 
-    return values_[position];
+    return position;
+  }
+
+  template <class T>
+  template <class T2>
+  void Array<T>::copy(T2 const* other) {
+    assert(values_ != nullptr);
+    for (size_t i = 0; i < total_size_; i++)
+      values_[i] = other[i];
+  }
+
+  template <class T>
+  template <class T2>
+  void Array<T>::copy(View<T2> const& other) {
+    assert(values_ != nullptr);
+    auto it1 = other.get_size().begin();
+    auto it2 = other.get_size().end();
+    for (size_t i = 0; i < total_size_ && it1 != it2; i++, ++it1)
+      values_[i] = other(*it1);
+  }
+
+  template <class T>
+  template <class T2>
+  void Array<T>::copy(ConstView<T2> const& other) {
+    assert(values_ != nullptr);
+    auto it1 = other.get_size().begin();
+    auto it2 = other.get_size().end();
+    for (size_t i = 0; i < total_size_ && it1 != it2; i++, ++it1)
+      values_[i] = other(*it1);
   }
 
   template <class T>
@@ -305,28 +348,7 @@ namespace MultidimensionalArray {
     }
 
     total_size_ = 0;
-    size_.clear();
-  }
-
-  template <class T>
-  bool Array<T>::same_size(SizeType const& other_size) const {
-    if (size_.size() != other_size.size())
-      return false;
-
-    for (unsigned int i = 0; i < size_.size(); i++)
-      if (size_[i] != other_size[i])
-        return false;
-
-    return true;
-  }
-
-  template <class T>
-  bool Array<T>::check_index(unsigned int const indexes[]) const {
-    for (unsigned int i = 0; i < size_.size(); i++)
-      if (indexes[i] >= size_[i])
-        return false;
-
-    return true;
+    size_.size_.clear();
   }
 };
 
