@@ -95,6 +95,15 @@ namespace MultidimensionalArray {
             size_[i] = other[i];
         }
 
+      Size const& operator=(Size const& other) {
+        size_ = other.size_;
+        return *this;
+      }
+      Size const& operator=(Size&& other) {
+        size_.swap(other.size_);
+        return *this;
+      }
+
       SizeType const& get_size() const { return size_; }
       void set_size(SizeType const& size) { size_ = size; }
       void set_size(SizeType&& size) { size_.swap(size); }
