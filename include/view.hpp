@@ -1,9 +1,21 @@
 #ifndef __MULTIDIMENSIONAL_ARRAY__VIEW_HPP__
 #define __MULTIDIMENSIONAL_ARRAY__VIEW_HPP__
 
-#include "array.hpp"
+#include "size.hpp"
 
 namespace MultidimensionalArray {
+  template <class T>
+  class Array;
+
+  template <class T>
+  class ConstArray;
+
+  template <class T>
+  class ConstView;
+
+  template <class T>
+  class Slice;
+
   template <class T>
   class View {
     public:
@@ -23,37 +35,43 @@ namespace MultidimensionalArray {
       template <class T2>
       View const& operator=(ConstView<T2> const& other);
 
+      Size::SizeType const& size() const { return size_.get_size(); }
+      Size const& get_size() const { return size_; }
+      size_t get_total_size() const;
+
       template <class... Args>
       T& operator()(Args const&... args);
       template <class... Args>
       T const& operator()(Args const&... args) const;
 
-      T& get_value(unsigned int const indexes[]);
-      T const& get_value(unsigned int const indexes[]) const;
+      T& get(Size::SizeType const& index);
+      T const& get(Size::SizeType const& index) const;
 
-      View set_range_begin(unsigned int dimension, unsigned int value);
-      View set_range_end(unsigned int dimension, unsigned int value);
-      View set_range_stride(unsigned int dimension, unsigned int value);
-      View fix_dimension(unsigned int dimension, unsigned int value);
-
-      typename Array<T>::SizeType get_size() const { return size_; }
+      View set_range_begin(size_t dimension, size_t value);
+      View set_range_end(size_t dimension, size_t value);
+      View set_range_stride(size_t dimension, size_t value);
+      View fix_dimension(size_t dimension, size_t value);
 
     private:
       friend class Array<T>;
 
       View(Array<T>& array);
 
-      template <class T2>
-      void copy(T2 const& other);
+      template <class... Args>
+      size_t get_position_variadic(Args const&... args) const;
+      size_t get_position(Size::SizeType::value_type const* indexes) const;
+
       template <class T2>
       void copy(T2 const* other);
-
-      bool same_size(typename Array<T>::SizeType const& other_size) const;
-      bool check_index(unsigned int const indexes[]) const;
+      template <class T2>
+      void copy(View<T2> const& other);
+      template <class T2>
+      void copy(ConstView<T2> const& other);
 
       Array<T>& array_;
-      typename Array<T>::SizeType size_, dimension_map_;
-      typename Array<T>::SizeType offset_, gain_, fixed_values_;
+      Size size_;
+      Size::SizeType dimension_map_;
+      Size::SizeType offset_, gain_, fixed_values_;
       std::vector<bool> fixed_flag_;
   };
 };

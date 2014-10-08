@@ -3,8 +3,6 @@
 
 #include "view.hpp"
 
-#include <cassert>
-
 namespace MultidimensionalArray {
   template <class T>
   View<T>::View(View const& other):
@@ -36,14 +34,14 @@ namespace MultidimensionalArray {
   template <class T>
   template <class T2>
   View<T> const& View<T>::operator=(Array<T2> const& other) {
-    assert(same_size(other.get_size()));
+    assert(size_.same(other.get_size()));
     copy(other.get_pointer());
     return *this;
   }
 
   template <class T>
   View<T> const& View<T>::operator=(ConstArray<T> const& other) {
-    assert(same_size(other.get_size()));
+    assert(size_.same(other.get_size()));
     copy(other.get_pointer());
     return *this;
   }
@@ -51,14 +49,14 @@ namespace MultidimensionalArray {
   template <class T>
   template <class T2>
   View<T> const& View<T>::operator=(ConstArray<T2> const& other) {
-    assert(same_size(other.get_size()));
+    assert(size_.same(other.get_size()));
     copy(other.get_pointer());
     return *this;
   }
 
   template <class T>
   View<T> const& View<T>::operator=(View const& other) {
-    assert(same_size(other.get_size()));
+    assert(size_.same(other.get_size()));
     copy(other);
     return *this;
   }
@@ -66,14 +64,14 @@ namespace MultidimensionalArray {
   template <class T>
   template <class T2>
   View<T> const& View<T>::operator=(View<T2> const& other) {
-    assert(same_size(other.get_size()));
+    assert(size_.same(other.get_size()));
     copy(other);
     return *this;
   }
 
   template <class T>
   View<T> const& View<T>::operator=(ConstView<T> const& other) {
-    assert(same_size(other.get_size()));
+    assert(size_.same(other.get_size()));
     copy(other);
     return *this;
   }
@@ -81,98 +79,46 @@ namespace MultidimensionalArray {
   template <class T>
   template <class T2>
   View<T> const& View<T>::operator=(ConstView<T2> const& other) {
-    assert(same_size(other.get_size()));
+    assert(size_.same(other.get_size()));
     copy(other);
     return *this;
   }
 
   template <class T>
+  size_t View<T>::get_total_size() const {
+    size_t total = 1;
+    for (auto v : size_.get_size())
+      total *= v;
+    return total;
+  }
+
+  template <class T>
   template <class... Args>
   T& View<T>::operator()(Args const&... args) {
-    assert(sizeof...(args) == size_.size());
-    unsigned int indexes[] = {
-      static_cast<typename Array<T>::SizeType::value_type>(args)...};
-    assert(check_index(indexes));
-
-    return get_value(indexes);
+    return array_.get_pointer()[get_position_variadic(args...)];
   }
 
   template <class T>
   template <class... Args>
   T const& View<T>::operator()(Args const&... args) const {
-    assert(sizeof...(args) == size_.size());
-    unsigned int indexes[] = {
-      static_cast<typename Array<T>::SizeType::value_type>(args)...};
-    assert(check_index(indexes));
-
-    return get_value(indexes);
+    return array_.get_pointer()[get_position_variadic(args...)];
   }
 
   template <class T>
-  T& View<T>::get_value(unsigned int const indexes[]) {
-    assert(check_index(indexes));
-    unsigned int indexes_i = 0, indexes_dimension = 0;
-
-    size_t position = 0;
-    if (fixed_flag_[indexes_dimension])
-      position = fixed_values_[indexes_dimension];
-    else
-      position = indexes[indexes_i++] * gain_[dimension_map_[indexes_dimension]]
-        + offset_[dimension_map_[indexes_dimension]];
-    indexes_dimension++;
-
-    while (indexes_dimension < gain_.size() && indexes_i < size_.size()) {
-      position *= array_.get_size()[indexes_dimension];
-
-      if (fixed_flag_[indexes_dimension])
-        position += fixed_values_[indexes_dimension];
-      else
-        position +=
-          indexes[indexes_i++] * gain_[dimension_map_[indexes_dimension]]
-          + offset_[dimension_map_[indexes_dimension]];
-      indexes_dimension++;
-    }
-
-    assert(indexes_dimension == gain_.size());
-    assert(indexes_i == size_.size());
-
-    return array_.get_pointer()[position];
+  T& View<T>::get(Size::SizeType const& index) {
+    assert(index.size() == size_.size_.size());
+    return array_.get_pointer()[get_position(&index[0])];
   }
 
   template <class T>
-  T const& View<T>::get_value(unsigned int const indexes[]) const {
-    assert(check_index(indexes));
-    unsigned int indexes_i = 0, indexes_dimension = 0;
-
-    size_t position = 0;
-    if (fixed_flag_[indexes_dimension])
-      position = fixed_values_[indexes_dimension];
-    else
-      position = indexes[indexes_i++] * gain_[dimension_map_[indexes_dimension]]
-        + offset_[dimension_map_[indexes_dimension]];
-    indexes_dimension++;
-
-    while (indexes_dimension < gain_.size() && indexes_i < size_.size()) {
-      position *= array_.get_size()[indexes_dimension];
-
-      if (fixed_flag_[indexes_dimension])
-        position += fixed_values_[indexes_dimension];
-      else
-        position +=
-          indexes[indexes_i++] * gain_[dimension_map_[indexes_dimension]]
-          + offset_[dimension_map_[indexes_dimension]];
-      indexes_dimension++;
-    }
-
-    assert(indexes_dimension == gain_.size());
-    assert(indexes_i == size_.size());
-
-    return array_.get_pointer()[position];
+  T const& View<T>::get(Size::SizeType const& index) const {
+    assert(index.size() == size_.size_.size());
+    return array_.get_pointer()[get_position(&index[0])];
   }
 
   template <class T>
-  View<T> View<T>::set_range_begin(unsigned int dimension, unsigned int value) {
-    assert(dimension < size_.size());
+  View<T> View<T>::set_range_begin(size_t dimension, size_t value) {
+    assert(dimension < size_.size_.size());
     assert(size_[dimension] > value);
 
     View<T> ret(*this);
@@ -183,8 +129,8 @@ namespace MultidimensionalArray {
   }
 
   template <class T>
-  View<T> View<T>::set_range_end(unsigned int dimension, unsigned int value) {
-    assert(dimension < size_.size());
+  View<T> View<T>::set_range_end(size_t dimension, size_t value) {
+    assert(dimension < size_.size_.size());
     assert(size_[dimension] >= value);
     assert(value > 0);
 
@@ -194,9 +140,8 @@ namespace MultidimensionalArray {
   }
 
   template <class T>
-  View<T> View<T>::set_range_stride(unsigned int dimension,
-      unsigned int value) {
-    assert(dimension < size_.size());
+  View<T> View<T>::set_range_stride(size_t dimension, size_t value) {
+    assert(dimension < size_.size_.size());
     assert(value > 0);
 
     View<T> ret(*this);
@@ -206,12 +151,12 @@ namespace MultidimensionalArray {
   }
 
   template <class T>
-  View<T> View<T>::fix_dimension(unsigned int dimension, unsigned int value) {
-    assert(dimension < size_.size());
+  View<T> View<T>::fix_dimension(size_t dimension, size_t value) {
+    assert(dimension < size_.size_.size());
     assert(size_[dimension] > value);
 
     View<T> ret(*this);
-    ret.size_.erase(ret.size_.begin()+dimension);
+    ret.size_.size_.erase(ret.size_.size_.begin()+dimension);
     ret.dimension_map_.erase(ret.dimension_map_.begin()+dimension);
 
     ret.fixed_values_[dimension_map_[dimension]] =
@@ -226,89 +171,91 @@ namespace MultidimensionalArray {
   View<T>::View(Array<T>& array):
     array_(array),
     size_(array.get_size()),
-    dimension_map_(size_.size()),
-    offset_(size_.size(), 0),
-    gain_(size_.size(), 1),
-    fixed_values_(size_.size(), 0),
-    fixed_flag_(size_.size(), false) {
-      for (unsigned int i = 0; i < size_.size(); i++)
+    dimension_map_(size_.size_.size()),
+    offset_(size_.size_.size(), 0),
+    gain_(size_.size_.size(), 1),
+    fixed_values_(size_.size_.size(), 0),
+    fixed_flag_(size_.size_.size(), false) {
+      for (size_t i = 0; i < size_.size_.size(); i++)
         dimension_map_[i] = i;
     }
 
   template <class T>
-  template <class T2>
-  void View<T>::copy(T2 const& other) {
-    unsigned int indexes[size_.size()];
-    for (unsigned int i = 0; i < size_.size(); i++)
-      indexes[i] = 0;
+  template <class... Args>
+  size_t View<T>::get_position_variadic(Args const&... args) const {
+    assert(sizeof...(args) == size_.size_.size());
+    Size::SizeType::value_type indexes[] =
+    {static_cast<Size::SizeType::value_type>(args)...};
 
-    while (1) {
-      get_value(indexes) = other.get_value(indexes);
+    return get_position(indexes);
+  }
 
-      unsigned int i = 0;
-      while (i < size_.size()) {
-        indexes[i]++;
-        if (indexes[i] == size_[i]) {
-          indexes[i] = 0;
-          i++;
-        }
-        else {
-          i = 0;
-          break;
-        }
-      }
-      if (i == size_.size())
-        break;
+  template <class T>
+  size_t View<T>::get_position(
+      Size::SizeType::value_type const* indexes) const {
+    assert(indexes != nullptr);
+    assert(size_.check_index(indexes, size_.size_.size()));
+
+    size_t indexes_dimension = 0, indexes_i = 0;
+
+    size_t position = 0;
+    if (fixed_flag_[indexes_dimension])
+      position = fixed_values_[indexes_dimension];
+    else
+      position = indexes[indexes_i++] * gain_[dimension_map_[indexes_dimension]]
+        + offset_[dimension_map_[indexes_dimension]];
+    indexes_dimension++;
+
+    while (indexes_dimension < gain_.size() &&
+        indexes_i < dimension_map_.size()) {
+      position *= array_.get_size()[indexes_dimension];
+
+      if (fixed_flag_[indexes_dimension])
+        position += fixed_values_[indexes_dimension];
+      else
+        position +=
+          indexes[indexes_i++] * gain_[dimension_map_[indexes_dimension]]
+          + offset_[dimension_map_[indexes_dimension]];
+      indexes_dimension++;
     }
+
+    assert(indexes_dimension == gain_.size());
+    assert(indexes_i == dimension_map_.size());
+
+    return position;
   }
 
   template <class T>
   template <class T2>
   void View<T>::copy(T2 const* other) {
-    unsigned int indexes[size_.size()];
-    for (unsigned int i = 0; i < size_.size(); i++)
-      indexes[i] = 0;
+    assert(other != nullptr);
+    auto it1 = size_.cbegin();
+    auto it2 = size_.cend();
+    size_t total_size = get_total_size();
+    for (size_t i = 0; i < total_size && it1 != it2; i++, ++it1)
+      get(*it1) = other[i];
+  }
 
-    size_t position = 0;
-    while (1) {
-      get_value(indexes) = other[position++];
-
-      unsigned int i = size_.size();
-      while (1) {
-        indexes[i-1]++;
-        if (indexes[i-1] == size_[i-1]) {
-          indexes[i-1] = 0;
-          i--;
-          if (i == 0)
-            break;
-        }
-        else
-          break;
-      }
-      if (i == 0)
-        break;
+  template <class T>
+  template <class T2>
+  void View<T>::copy(View<T2> const& other) {
+    auto it1 = size_.cbegin();
+    auto it2 = size_.cend();
+    for (; it1 != it2; ++it1) {
+      auto v = *it1;
+      get(v) = other.get(v);
     }
   }
 
   template <class T>
-  bool View<T>::same_size(typename Array<T>::SizeType const& other_size) const {
-    if (size_.size() != other_size.size())
-      return false;
-
-    for (unsigned int i = 0; i < size_.size(); i++)
-      if (size_[i] != other_size[i])
-        return false;
-
-    return true;
-  }
-
-  template <class T>
-  bool View<T>::check_index(unsigned int const indexes[]) const {
-    for (unsigned int i = 0; i < size_.size(); i++)
-      if (indexes[i] >= size_[i])
-        return false;
-
-    return true;
+  template <class T2>
+  void View<T>::copy(ConstView<T2> const& other) {
+    auto it1 = size_.cbegin();
+    auto it2 = size_.cend();
+    for (; it1 != it2; ++it1) {
+      auto v = *it1;
+      get(v) = other.get(v);
+    }
   }
 };
 
