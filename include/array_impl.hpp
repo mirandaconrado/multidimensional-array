@@ -305,6 +305,7 @@ namespace MultidimensionalArray {
   template <class T>
   size_t Array<T>::get_position(
       Size::SizeType::value_type const* indexes) const {
+    assert(indexes != nullptr);
     assert(values_ != nullptr);
     assert(size_.check_index(indexes, size_.size_.size()));
 
@@ -329,20 +330,20 @@ namespace MultidimensionalArray {
   template <class T2>
   void Array<T>::copy(View<T2> const& other) {
     assert(values_ != nullptr);
-    auto it1 = other.get_size().begin();
-    auto it2 = other.get_size().end();
+    auto it1 = other.get_size().cbegin();
+    auto it2 = other.get_size().cend();
     for (size_t i = 0; i < total_size_ && it1 != it2; i++, ++it1)
-      values_[i] = other(*it1);
+      values_[i] = other.get(*it1);
   }
 
   template <class T>
   template <class T2>
   void Array<T>::copy(ConstView<T2> const& other) {
     assert(values_ != nullptr);
-    auto it1 = other.get_size().begin();
-    auto it2 = other.get_size().end();
+    auto it1 = other.get_size().cbegin();
+    auto it2 = other.get_size().cend();
     for (size_t i = 0; i < total_size_ && it1 != it2; i++, ++it1)
-      values_[i] = other(*it1);
+      values_[i] = other.get(*it1);
   }
 
   template <class T>
