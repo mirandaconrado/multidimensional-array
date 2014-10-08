@@ -224,6 +224,11 @@ namespace MultidimensionalArray {
   }
 
   template <class T>
+  ConstView<T> Array<T>::view() const {
+    return ConstView<T>(*this);
+  }
+
+  template <class T>
   bool Array<T>::resize(Size const& size, bool allow_allocation) {
     size_t new_total_size = 1;
     for (auto v : size.get_size())

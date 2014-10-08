@@ -67,6 +67,7 @@ namespace MultidimensionalArray {
       Array const& operator=(ConstView<T2> const& other);
 
       View<T> view();
+      ConstView<T> view() const;
 
       bool resize(Size const& size, bool allow_allocation = true);
       bool resize(Size::SizeType const& size, bool allow_allocation = true);
