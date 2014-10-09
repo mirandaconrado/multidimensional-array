@@ -11,7 +11,7 @@ static void check_sizes(Size::SizeType const& sizes1,
     EXPECT_EQ(sizes1[i], sizes2[i]);
 }
 
-TEST(SizeTest, Iterator) {
+TEST(SizeTest, Accessors) {
   Size::SizeType sizes({2, 3, 4, 5});
   Size size(sizes);
 
@@ -20,6 +20,13 @@ TEST(SizeTest, Iterator) {
           {2, 3, 4, 5, 6})));
   EXPECT_FALSE(size.same(Size::SizeType(
           {2, 3, 4, 6})));
+
+  EXPECT_EQ(2*3*4*5, size.get_total_size());
+}
+
+TEST(SizeTest, Iterator) {
+  Size::SizeType sizes({2, 3, 4, 5});
+  Size size(sizes);
 
   auto it1 = size.cbegin();
   auto it2 = size.cend();
