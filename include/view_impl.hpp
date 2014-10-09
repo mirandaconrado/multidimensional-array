@@ -106,19 +106,19 @@ namespace MultidimensionalArray {
 
   template <class T>
   T& View<T>::get(Size::SizeType const& index) {
-    assert(index.size() == size_.size_.size());
+    assert(index.size() == size_.get_size().size());
     return array_.get_pointer()[get_position(&index[0])];
   }
 
   template <class T>
   T const& View<T>::get(Size::SizeType const& index) const {
-    assert(index.size() == size_.size_.size());
+    assert(index.size() == size_.get_size().size());
     return array_.get_pointer()[get_position(&index[0])];
   }
 
   template <class T>
   View<T> View<T>::set_range_begin(size_t dimension, size_t value) {
-    assert(dimension < size_.size_.size());
+    assert(dimension < size_.get_size().size());
     assert(size_[dimension] > value);
 
     View<T> ret(*this);
@@ -130,7 +130,7 @@ namespace MultidimensionalArray {
 
   template <class T>
   View<T> View<T>::set_range_end(size_t dimension, size_t value) {
-    assert(dimension < size_.size_.size());
+    assert(dimension < size_.get_size().size());
     assert(size_[dimension] >= value);
     assert(value > 0);
 
@@ -141,7 +141,7 @@ namespace MultidimensionalArray {
 
   template <class T>
   View<T> View<T>::set_range_stride(size_t dimension, size_t value) {
-    assert(dimension < size_.size_.size());
+    assert(dimension < size_.get_size().size());
     assert(value > 0);
 
     View<T> ret(*this);
@@ -152,11 +152,13 @@ namespace MultidimensionalArray {
 
   template <class T>
   View<T> View<T>::fix_dimension(size_t dimension, size_t value) {
-    assert(dimension < size_.size_.size());
+    assert(dimension < size_.get_size().size());
     assert(size_[dimension] > value);
 
     View<T> ret(*this);
-    ret.size_.size_.erase(ret.size_.size_.begin()+dimension);
+    Size::SizeType temp(ret.size_.get_size());
+    temp.erase(temp.begin()+dimension);
+    ret.size_.set_size(std::move(temp));
     ret.dimension_map_.erase(ret.dimension_map_.begin()+dimension);
 
     ret.fixed_values_[dimension_map_[dimension]] =
@@ -171,19 +173,19 @@ namespace MultidimensionalArray {
   View<T>::View(Array<T>& array):
     array_(array),
     size_(array.get_size()),
-    dimension_map_(size_.size_.size()),
-    offset_(size_.size_.size(), 0),
-    gain_(size_.size_.size(), 1),
-    fixed_values_(size_.size_.size(), 0),
-    fixed_flag_(size_.size_.size(), false) {
-      for (size_t i = 0; i < size_.size_.size(); i++)
+    dimension_map_(size_.get_size().size()),
+    offset_(size_.get_size().size(), 0),
+    gain_(size_.get_size().size(), 1),
+    fixed_values_(size_.get_size().size(), 0),
+    fixed_flag_(size_.get_size().size(), false) {
+      for (size_t i = 0; i < size_.get_size().size(); i++)
         dimension_map_[i] = i;
     }
 
   template <class T>
   template <class... Args>
   size_t View<T>::get_position_variadic(Args const&... args) const {
-    assert(sizeof...(args) == size_.size_.size());
+    assert(sizeof...(args) == size_.get_size().size());
     Size::SizeType::value_type indexes[] =
     {static_cast<Size::SizeType::value_type>(args)...};
 
@@ -194,7 +196,7 @@ namespace MultidimensionalArray {
   size_t View<T>::get_position(
       Size::SizeType::value_type const* indexes) const {
     assert(indexes != nullptr);
-    assert(size_.check_index(indexes, size_.size_.size()));
+    assert(size_.check_index(indexes, size_.get_size().size()));
 
     size_t indexes_dimension = 0, indexes_i = 0;
 

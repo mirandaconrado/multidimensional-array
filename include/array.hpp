@@ -74,7 +74,7 @@ namespace MultidimensionalArray {
 
       Size::SizeType const& size() const { return size_.get_size(); }
       Size const& get_size() const { return size_; }
-      size_t get_total_size() const { return total_size_; }
+      size_t get_total_size() const { return size_.get_total_size(); }
 
       void set_pointer(T* p, bool responsible_for_deleting = true);
       T* get_pointer() { return values_; }
@@ -105,7 +105,6 @@ namespace MultidimensionalArray {
 
       void cleanup();
 
-      size_t total_size_;
       Size size_;
       T* values_;
       bool deallocate_on_destruction_;

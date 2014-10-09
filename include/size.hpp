@@ -80,33 +80,40 @@ namespace MultidimensionalArray {
 
       Size() { }
       Size(Size const& other):
-        size_(other.size_) { }
+        size_(other.size_),
+        total_size_(other.total_size_) { }
       Size(Size&& other):
-        size_(std::move(other.size_)) { }
+        size_(std::move(other.size_)),
+        total_size_(std::move(other.total_size_)) { }
       Size(SizeType const& other):
-        size_(other) { }
+        size_(other) { compute_total_size(); }
       Size(SizeType&& other):
-        size_(std::move(other)) { }
+        size_(std::move(other)) { compute_total_size(); }
       Size(SizeType::value_type const* other, size_t n_elements):
         size_(n_elements) {
           assert(other != nullptr);
           assert(n_elements > 0);
           for (size_t i = 0; i < n_elements; i++)
             size_[i] = other[i];
+
+          compute_total_size();
         }
 
       Size const& operator=(Size const& other) {
         size_ = other.size_;
+        total_size_ = other.total_size_;
         return *this;
       }
       Size const& operator=(Size&& other) {
         size_.swap(other.size_);
+        total_size_ = std::move(other.total_size_);
         return *this;
       }
 
+      size_t get_total_size() const { return total_size_; }
       SizeType const& get_size() const { return size_; }
-      void set_size(SizeType const& size) { size_ = size; }
-      void set_size(SizeType&& size) { size_.swap(size); }
+      void set_size(SizeType const& size) { size_ = size; compute_total_size(); }
+      void set_size(SizeType&& size) { size_.swap(size); compute_total_size(); }
 
       SizeType::value_type& operator[](size_t index) {
         assert(index < size_.size());
@@ -164,8 +171,15 @@ namespace MultidimensionalArray {
         return const_iterator(end, size_);
       }
 
-    public:
+    private:
+      void compute_total_size() {
+        total_size_ = 1;
+        for (auto v : size_)
+          total_size_ *= v;
+      }
+
       SizeType size_;
+      size_t total_size_;
   };
 };
 

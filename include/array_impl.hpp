@@ -6,19 +6,17 @@
 namespace MultidimensionalArray {
   template <class T>
   Array<T>::Array():
-    total_size_(0),
     values_(nullptr),
     deallocate_on_destruction_(true) { }
 
   template <class T>
   Array<T>::Array(Array const& other):
-    total_size_(other.total_size_),
     size_(other.size_),
     values_(nullptr),
     deallocate_on_destruction_(other.deallocate_on_destruction_) {
       if (other.deallocate_on_destruction_) {
-        if (total_size_ > 0) {
-          values_ = new T[total_size_];
+        if (size_.get_total_size() > 0) {
+          values_ = new T[size_.get_total_size()];
           copy(other.values_);
         }
       }
@@ -30,7 +28,6 @@ namespace MultidimensionalArray {
 
   template <class T>
   Array<T>::Array(Array&& other):
-    total_size_(std::move(other.total_size_)),
     size_(std::move(other.size_)),
     values_(std::move(other.values_)),
     deallocate_on_destruction_(std::move(other.deallocate_on_destruction_)) {
@@ -41,23 +38,21 @@ namespace MultidimensionalArray {
   template <class T2>
   Array<T>::Array(Array<T2> const& other):
     Array() {
-      total_size_ = other.get_total_size();
       size_ = other.get_size();
       deallocate_on_destruction_ = true;
-      if (total_size_ > 0)
-        values_ = new T[total_size_];
+      if (size_.get_total_size() > 0)
+        values_ = new T[size_.get_total_size()];
 
       copy(other.get_pointer());
     }
 
   template <class T>
   Array<T>::Array(ConstArray<T> const& other):
-    total_size_(other.total_size_),
     size_(other.size_),
     values_(nullptr),
     deallocate_on_destruction_(true) {
-      if (total_size_ > 0) {
-        values_ = new T[total_size_];
+      if (size_.get_total_size() > 0) {
+        values_ = new T[size_.get_total_size()];
         copy(other.values_);
       }
     }
@@ -65,12 +60,11 @@ namespace MultidimensionalArray {
   template <class T>
   template <class T2>
   Array<T>::Array(ConstArray<T2> const& other):
-    total_size_(other.total_size_),
     size_(other.size_),
     values_(nullptr),
     deallocate_on_destruction_(true) {
-      if (total_size_ > 0) {
-        values_ = new T[total_size_];
+      if (size_.get_total_size() > 0) {
+        values_ = new T[size_.get_total_size()];
         copy(other.values_);
       }
     }
@@ -107,12 +101,8 @@ namespace MultidimensionalArray {
       size_ = size;
       deallocate_on_destruction_ = true;
 
-      total_size_ = 1;
-      for (auto v : size_.get_size())
-        total_size_ *= v;
-
-      if (total_size_ > 0)
-        values_ = new T[total_size_];
+      if (size_.get_total_size() > 0)
+        values_ = new T[size_.get_total_size()];
     }
 
   template <class T>
@@ -230,21 +220,16 @@ namespace MultidimensionalArray {
 
   template <class T>
   bool Array<T>::resize(Size const& size, bool allow_allocation) {
-    size_t new_total_size = 1;
-    for (auto v : size.get_size())
-      new_total_size *= v;
-
-    if (new_total_size != total_size_) {
+    if (size.get_total_size() != size_.get_total_size()) {
       if (!deallocate_on_destruction_)
         return false;
 
-      total_size_ = new_total_size;
       if (values_) {
         delete[] values_;
         values_ = nullptr;
       }
-      if (total_size_ > 0 && allow_allocation)
-        values_ = new T[total_size_];
+      if (size.get_total_size() > 0 && allow_allocation)
+        values_ = new T[size.get_total_size()];
     }
 
     size_ = size;
@@ -282,20 +267,20 @@ namespace MultidimensionalArray {
 
   template <class T>
   T& Array<T>::get(Size::SizeType const& index) {
-    assert(index.size() == size_.size_.size());
+    assert(index.size() == size_.get_size().size());
     return values_[get_position(&index[0])];
   }
 
   template <class T>
   T const& Array<T>::get(Size::SizeType const& index) const {
-    assert(index.size() == size_.size_.size());
+    assert(index.size() == size_.get_size().size());
     return values_[get_position(&index[0])];
   }
 
   template <class T>
   template <class... Args>
   size_t Array<T>::get_position_variadic(Args const&... args) const {
-    assert(sizeof...(args) == size_.size_.size());
+    assert(sizeof...(args) == size_.get_size().size());
     Size::SizeType::value_type indexes[] =
     {static_cast<Size::SizeType::value_type>(args)...};
 
@@ -307,10 +292,10 @@ namespace MultidimensionalArray {
       Size::SizeType::value_type const* indexes) const {
     assert(indexes != nullptr);
     assert(values_ != nullptr);
-    assert(size_.check_index(indexes, size_.size_.size()));
+    assert(size_.check_index(indexes, size_.get_size().size()));
 
     size_t position = indexes[0];
-    for (size_t i = 0; i < size_.size_.size()-1; i++) {
+    for (size_t i = 0; i < size_.get_size().size()-1; i++) {
       position *= size_[i+1];
       position += indexes[i+1];
     }
@@ -322,7 +307,7 @@ namespace MultidimensionalArray {
   template <class T2>
   void Array<T>::copy(T2 const* other) {
     assert(values_ != nullptr);
-    for (size_t i = 0; i < total_size_; i++)
+    for (size_t i = 0; i < size_.get_total_size(); i++)
       values_[i] = other[i];
   }
 
@@ -332,7 +317,7 @@ namespace MultidimensionalArray {
     assert(values_ != nullptr);
     auto it1 = other.get_size().cbegin();
     auto it2 = other.get_size().cend();
-    for (size_t i = 0; i < total_size_ && it1 != it2; i++, ++it1)
+    for (size_t i = 0; i < size_.get_total_size() && it1 != it2; i++, ++it1)
       values_[i] = other.get(*it1);
   }
 
@@ -342,7 +327,7 @@ namespace MultidimensionalArray {
     assert(values_ != nullptr);
     auto it1 = other.get_size().cbegin();
     auto it2 = other.get_size().cend();
-    for (size_t i = 0; i < total_size_ && it1 != it2; i++, ++it1)
+    for (size_t i = 0; i < size_.get_total_size() && it1 != it2; i++, ++it1)
       values_[i] = other.get(*it1);
   }
 
@@ -353,8 +338,7 @@ namespace MultidimensionalArray {
       values_ = nullptr;
     }
 
-    total_size_ = 0;
-    size_.size_.clear();
+    size_ = Size();
   }
 };
 
