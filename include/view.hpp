@@ -37,7 +37,7 @@ namespace MultidimensionalArray {
 
       Size::SizeType const& size() const { return size_.get_size(); }
       Size const& get_size() const { return size_; }
-      size_t get_total_size() const;
+      size_t get_total_size() const { return size_.get_total_size(); }
 
       template <class... Args>
       T& operator()(Args const&... args);

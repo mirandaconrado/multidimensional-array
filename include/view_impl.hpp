@@ -85,14 +85,6 @@ namespace MultidimensionalArray {
   }
 
   template <class T>
-  size_t View<T>::get_total_size() const {
-    size_t total = 1;
-    for (auto v : size_.get_size())
-      total *= v;
-    return total;
-  }
-
-  template <class T>
   template <class... Args>
   T& View<T>::operator()(Args const&... args) {
     return array_.get_pointer()[get_position_variadic(args...)];
