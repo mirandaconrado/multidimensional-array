@@ -256,51 +256,23 @@ namespace MultidimensionalArray {
   template <class T>
   template <class... Args>
   T& Array<T>::operator()(Args const&... args) {
-    return values_[get_position_variadic(args...)];
+    return values_[size_.get_position_variadic(args...)];
   }
 
   template <class T>
   template <class... Args>
   T const& Array<T>::operator()(Args const&... args) const {
-    return values_[get_position_variadic(args...)];
+    return values_[size_.get_position_variadic(args...)];
   }
 
   template <class T>
   T& Array<T>::get(Size::SizeType const& index) {
-    assert(index.size() == size().size());
-    return values_[get_position(&index[0])];
+    return values_[size_.get_position(index)];
   }
 
   template <class T>
   T const& Array<T>::get(Size::SizeType const& index) const {
-    assert(index.size() == size().size());
-    return values_[get_position(&index[0])];
-  }
-
-  template <class T>
-  template <class... Args>
-  size_t Array<T>::get_position_variadic(Args const&... args) const {
-    assert(sizeof...(args) == size().size());
-    Size::SizeType::value_type indexes[] =
-    {static_cast<Size::SizeType::value_type>(args)...};
-
-    return get_position(indexes);
-  }
-
-  template <class T>
-  size_t Array<T>::get_position(
-      Size::SizeType::value_type const* indexes) const {
-    assert(indexes != nullptr);
-    assert(values_ != nullptr);
-    assert(size_.check_index(indexes, size().size()));
-
-    size_t position = indexes[0];
-    for (size_t i = 0; i < size().size()-1; i++) {
-      position *= size_[i+1];
-      position += indexes[i+1];
-    }
-
-    return position;
+    return values_[size_.get_position(index)];
   }
 
   template <class T>

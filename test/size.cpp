@@ -46,3 +46,19 @@ TEST(SizeTest, Iterator) {
 
   EXPECT_EQ(it2, it1);
 }
+
+TEST(SizeTest, Position) {
+  Size::SizeType sizes({2, 3, 4, 5});
+  Size size(sizes);
+
+  size_t counter = 0;
+  for (Size::SizeType::value_type i1 = 0; i1 < 2; i1++)
+    for (Size::SizeType::value_type i2 = 0; i2 < 3; i2++)
+      for (Size::SizeType::value_type i3 = 0; i3 < 4; i3++)
+        for (Size::SizeType::value_type i4 = 0; i4 < 5; i4++) {
+          EXPECT_EQ(counter, size.get_position_variadic(i1, i2, i3, i4));
+          EXPECT_EQ(counter,
+              size.get_position(Size::SizeType({i1, i2, i3, i4})));
+          counter++;
+        }
+}

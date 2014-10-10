@@ -131,6 +131,7 @@ namespace MultidimensionalArray {
         return same(&other[0], other.size());
       }
       bool same(SizeType::value_type const* other, size_t n_elements) const {
+        assert(other != nullptr);
         if (size_.size() != n_elements)
           return false;
 
@@ -141,22 +142,46 @@ namespace MultidimensionalArray {
         return true;
       }
 
-      bool check_index(Size const& other) const {
-        return check_index(other.size_);
+      bool check_index(Size const& index) const {
+        return check_index(index.size_);
       }
-      bool check_index(SizeType const& other) const {
-        return check_index(&other[0], other.size());
+      bool check_index(SizeType const& index) const {
+        return check_index(&index[0], index.size());
       }
-      bool check_index(SizeType::value_type const* other,
+      bool check_index(SizeType::value_type const* index,
           size_t n_elements) const {
+        assert(index != nullptr);
         if (size_.size() != n_elements)
           return false;
 
         for (size_t i = 0; i < n_elements; i++)
-          if (size_[i] <= other[i])
+          if (size_[i] <= index[i])
             return false;
 
         return true;
+      }
+
+      template <class... Args>
+      size_t get_position_variadic(Args const&... args) const {
+        SizeType::value_type index[] =
+        {static_cast<SizeType::value_type>(args)...};
+        return get_position(index, sizeof...(args));
+      }
+      size_t get_position(SizeType const& index) const {
+        return get_position(&index[0], index.size());
+      }
+      size_t get_position(SizeType::value_type const* index,
+          size_t n_elements) const {
+        assert(index != nullptr);
+        assert(check_index(index, n_elements));
+
+        size_t position = index[0];
+        for (size_t i = 0; i < n_elements-1; i++) {
+          position *= size_[i+1];
+          position += index[i+1];
+        }
+
+        return position;
       }
 
       const_iterator cbegin() const {
