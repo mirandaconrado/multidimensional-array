@@ -307,6 +307,7 @@ namespace MultidimensionalArray {
   template <class T2>
   void Array<T>::copy(T2 const* other) {
     assert(values_ != nullptr);
+    assert(other != nullptr);
     for (size_t i = 0; i < get_total_size(); i++)
       values_[i] = other[i];
   }
