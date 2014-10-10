@@ -256,22 +256,26 @@ namespace MultidimensionalArray {
   template <class T>
   template <class... Args>
   T& Array<T>::operator()(Args const&... args) {
+    assert(values_ != nullptr);
     return values_[size_.get_position_variadic(args...)];
   }
 
   template <class T>
   template <class... Args>
   T const& Array<T>::operator()(Args const&... args) const {
+    assert(values_ != nullptr);
     return values_[size_.get_position_variadic(args...)];
   }
 
   template <class T>
   T& Array<T>::get(Size::SizeType const& index) {
+    assert(values_ != nullptr);
     return values_[size_.get_position(index)];
   }
 
   template <class T>
   T const& Array<T>::get(Size::SizeType const& index) const {
+    assert(values_ != nullptr);
     return values_[size_.get_position(index)];
   }
 
