@@ -1,16 +1,17 @@
+#include "array.hpp"
 #include "slice.hpp"
 
 #include <gtest/gtest.h>
 
-#include <vector>
+using namespace MultidimensionalArray;
 
 class SliceTest: public ::testing::Test {
   protected:
-    std::vector<unsigned int> sizes;
+    Size::SizeType sizes;
     int *values;
 
     virtual void SetUp() {
-      sizes = std::vector<unsigned int>({2, 3, 4, 5});
+      sizes = Size::SizeType({2, 3, 4, 5});
       values = new int[2*3*4*5];
       unsigned int index = 0;
       for (int i1 = 0; i1 < 2; i1++)
@@ -26,8 +27,8 @@ class SliceTest: public ::testing::Test {
       delete[] values;
     }
 
-    void check_sizes(std::vector<unsigned int> const& sizes1,
-        std::vector<unsigned int> const& sizes2) {
+    void check_sizes(Size::SizeType const& sizes1,
+        Size::SizeType const& sizes2) {
       EXPECT_EQ(sizes1.size(), sizes2.size());
       for (unsigned int i = 0; i < sizes1.size(); i++)
         EXPECT_EQ(sizes1[i], sizes2[i]);
@@ -35,13 +36,13 @@ class SliceTest: public ::testing::Test {
 };
 
 TEST_F(SliceTest, Elements) {
-  MultidimensionalArray::Array<int> array(sizes, values);
-  MultidimensionalArray::Slice<int> slice(array, 1);
+  Array<int> array(sizes, values);
+  Slice<int> slice(array, 1);
 
   unsigned int index = 0, element_index = 0, inner_index = 0;
   for (int i1 = 0; i1 < 2; i1++)
     for (int i2 = 0; i2 < 3; i2++) {
-      MultidimensionalArray::Array<int> temp(slice.get_element(element_index));
+      Array<int> temp(slice.get_element(element_index));
       int* values = temp.get_pointer();
       inner_index = 0;
       for (int i3 = 0; i3 < 4; i3++)
@@ -56,13 +57,13 @@ TEST_F(SliceTest, Elements) {
 }
 
 TEST_F(SliceTest, ElementsSet) {
-  MultidimensionalArray::Array<int> array(sizes, values);
-  MultidimensionalArray::Slice<int> slice(array, 1);
+  Array<int> array(sizes, values);
+  Slice<int> slice(array, 1);
 
   unsigned int index = 0, element_index = 0, inner_index = 0;
   for (int i1 = 0; i1 < 2; i1++)
     for (int i2 = 0; i2 < 3; i2++) {
-      MultidimensionalArray::Array<int> temp(slice.get_element(element_index));
+      Array<int> temp(slice.get_element(element_index));
       int* values = temp.get_pointer();
       inner_index = 0;
       for (int i3 = 0; i3 < 4; i3++)
@@ -77,23 +78,23 @@ TEST_F(SliceTest, ElementsSet) {
 }
 
 TEST_F(SliceTest, Sizes) {
-  MultidimensionalArray::Array<int> array(sizes, values);
+  Array<int> array(sizes, values);
 
   {
-    MultidimensionalArray::Slice<int> slice(array, 0);
-    check_sizes(slice.get_left_size(), {2});
-    check_sizes(slice.get_right_size(), {3, 4, 5});
+    Slice<int> slice(array, 0);
+    check_sizes(slice.left_size(), {2});
+    check_sizes(slice.right_size(), {3, 4, 5});
   }
 
   {
-    MultidimensionalArray::Slice<int> slice(array, 1);
-    check_sizes(slice.get_left_size(), {2, 3});
-    check_sizes(slice.get_right_size(), {4, 5});
+    Slice<int> slice(array, 1);
+    check_sizes(slice.left_size(), {2, 3});
+    check_sizes(slice.right_size(), {4, 5});
   }
 
   {
-    MultidimensionalArray::Slice<int> slice(array, 2);
-    check_sizes(slice.get_left_size(), {2, 3, 4});
-    check_sizes(slice.get_right_size(), {5});
+    Slice<int> slice(array, 2);
+    check_sizes(slice.left_size(), {2, 3, 4});
+    check_sizes(slice.right_size(), {5});
   }
 }

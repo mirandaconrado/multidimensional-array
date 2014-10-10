@@ -90,7 +90,7 @@ namespace MultidimensionalArray {
 
     private:
       //friend class ConstArray<T>;
-      //friend class Slice<T>;
+      friend class Slice<T>;
 
       template <class... Args>
       size_t get_position_variadic(Args const&... args) const;
