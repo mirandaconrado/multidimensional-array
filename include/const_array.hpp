@@ -1,8 +1,7 @@
 #ifndef __MULTIDIMENSIONAL_ARRAY__CONST_ARRAY_HPP__
 #define __MULTIDIMENSIONAL_ARRAY__CONST_ARRAY_HPP__
 
-#include <cstdlib>
-#include <vector>
+#include "size.hpp"
 
 namespace MultidimensionalArray {
   template <class T>
@@ -17,8 +16,6 @@ namespace MultidimensionalArray {
   template <class T>
   class ConstArray {
     public:
-      typedef std::vector<unsigned int> SizeType;
-
       ConstArray();
 
       ConstArray(ConstArray const& other);
@@ -27,18 +24,24 @@ namespace MultidimensionalArray {
       ConstArray(Array<T> const& other);
       ConstArray(Array<T>&& other);
 
-      ConstArray(SizeType const& size);
-      ConstArray(SizeType const& size, T const* ptr,
+      ConstArray(Size const& size);
+      ConstArray(Size const& size, T const* ptr,
+          bool responsible_for_deleting = false);
+
+      ConstArray(Size::SizeType const& size);
+      ConstArray(Size::SizeType const& size, T const* ptr,
           bool responsible_for_deleting = false);
 
       ~ConstArray();
 
       ConstView<T> view();
 
-      bool resize(SizeType const& size);
+      bool resize(Size const& size);
+      bool resize(Size::SizeType const& size);
 
-      SizeType const& get_size() const { return size_; }
-      size_t get_total_size() const { return total_size_; }
+      Size::SizeType const& size() const { return size_.get_size(); }
+      Size const& get_size() const { return size_; }
+      size_t get_total_size() const { return size_.get_total_size(); }
 
       void set_pointer(T const* ptr, bool responsible_for_deleting = false);
       T const* get_pointer() const { return values_; }
@@ -46,18 +49,15 @@ namespace MultidimensionalArray {
       template <class... Args>
       T const& operator()(Args const&... args) const;
 
+      T const& get(Size::SizeType const& index) const;
+
     private:
       friend class Array<T>;
       friend class ConstSlice<T>;
 
       void cleanup();
 
-      bool same_size(SizeType const& other_size) const;
-      bool check_index(SizeType const& indexes) const;
-      bool check_index(unsigned int const indexes[]) const;
-
-      size_t total_size_;
-      SizeType size_;
+      Size size_;
       T const* values_;
       bool deallocate_on_destruction_;
   };

@@ -89,7 +89,7 @@ namespace MultidimensionalArray {
       T const& get(Size::SizeType const& index) const;
 
     private:
-      //friend class ConstArray<T>;
+      friend class ConstArray<T>;
       friend class Slice<T>;
 
       template <class T2>
