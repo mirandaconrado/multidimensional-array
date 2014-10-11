@@ -60,7 +60,7 @@ TEST_F(SliceTest, ElementsSet) {
   Array<int> array(sizes, values);
   Slice<int> slice(array, 1);
 
-  Size::SizeType::value_type index = 0, element_index = 0, inner_index = 0;
+  size_t index = 0, element_index = 0, inner_index = 0;
   for (Size::SizeType::value_type i1 = 0; i1 < 2; i1++)
     for (Size::SizeType::value_type i2 = 0; i2 < 3; i2++) {
       Array<int> temp(slice.get_element(element_index));
