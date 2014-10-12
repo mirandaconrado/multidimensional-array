@@ -14,9 +14,6 @@ namespace MultidimensionalArray {
   class ConstView;
 
   template <class T>
-  class Slice;
-
-  template <class T>
   class View {
     public:
       View(View const& other);
