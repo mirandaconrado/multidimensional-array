@@ -2,9 +2,6 @@
 #define __MULTIDIMENSIONAL_ARRAY__CONST_ARRAY_IMPL_HPP__
 
 #include "const_array.hpp"
-#include "array.hpp"
-
-#include <cassert>
 
 namespace MultidimensionalArray {
   template <class T>
