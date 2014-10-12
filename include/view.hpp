@@ -51,6 +51,7 @@ namespace MultidimensionalArray {
 
     private:
       friend class Array<T>;
+      friend class ConstView<T>;
 
       View(Array<T>& array);
 
