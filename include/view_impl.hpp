@@ -87,24 +87,28 @@ namespace MultidimensionalArray {
   template <class T>
   template <class... Args>
   T& View<T>::operator()(Args const&... args) {
+    assert(array_.get_pointer() != nullptr);
     return array_.get_pointer()[get_position_variadic(args...)];
   }
 
   template <class T>
   template <class... Args>
   T const& View<T>::operator()(Args const&... args) const {
+    assert(array_.get_pointer() != nullptr);
     return array_.get_pointer()[get_position_variadic(args...)];
   }
 
   template <class T>
   T& View<T>::get(Size::SizeType const& index) {
     assert(index.size() == size().size());
+    assert(array_.get_pointer() != nullptr);
     return array_.get_pointer()[get_position(&index[0])];
   }
 
   template <class T>
   T const& View<T>::get(Size::SizeType const& index) const {
     assert(index.size() == size().size());
+    assert(array_.get_pointer() != nullptr);
     return array_.get_pointer()[get_position(&index[0])];
   }
 
