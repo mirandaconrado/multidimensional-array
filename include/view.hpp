@@ -44,10 +44,10 @@ namespace MultidimensionalArray {
       T& get(Size::SizeType const& index);
       T const& get(Size::SizeType const& index) const;
 
-      View set_range_begin(size_t dimension, size_t value);
-      View set_range_end(size_t dimension, size_t value);
-      View set_range_stride(size_t dimension, size_t value);
-      View fix_dimension(size_t dimension, size_t value);
+      View set_range_begin(size_t dimension, size_t value) const;
+      View set_range_end(size_t dimension, size_t value) const;
+      View set_range_stride(size_t dimension, size_t value) const;
+      View fix_dimension(size_t dimension, size_t value) const;
 
     private:
       friend class Array<T>;

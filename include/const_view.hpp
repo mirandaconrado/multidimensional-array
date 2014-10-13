@@ -31,10 +31,10 @@ namespace MultidimensionalArray {
 
       T const& get(Size::SizeType const& index) const;
 
-      ConstView set_range_begin(size_t dimension, size_t value);
-      ConstView set_range_end(size_t dimension, size_t value);
-      ConstView set_range_stride(size_t dimension, size_t value);
-      ConstView fix_dimension(size_t dimension, size_t value);
+      ConstView set_range_begin(size_t dimension, size_t value) const;
+      ConstView set_range_end(size_t dimension, size_t value) const;
+      ConstView set_range_stride(size_t dimension, size_t value) const;
+      ConstView fix_dimension(size_t dimension, size_t value) const;
 
     private:
       friend class Array<T>;

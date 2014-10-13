@@ -79,7 +79,7 @@ namespace MultidimensionalArray {
 
   template <class T>
   ConstView<T> ConstView<T>::set_range_begin(size_t dimension,
-      size_t value) {
+      size_t value) const {
     assert(dimension < size().size());
     assert(size_[dimension] > value);
 
@@ -93,7 +93,7 @@ namespace MultidimensionalArray {
 
   template <class T>
   ConstView<T> ConstView<T>::set_range_end(size_t dimension,
-      size_t value) {
+      size_t value) const {
     assert(dimension < size().size());
     assert(size_[dimension] >= value);
     assert(value > 0);
@@ -106,7 +106,7 @@ namespace MultidimensionalArray {
 
   template <class T>
   ConstView<T> ConstView<T>::set_range_stride(size_t dimension,
-      size_t value) {
+      size_t value) const {
     assert(dimension < size().size());
     assert(value > 0);
 
@@ -119,7 +119,7 @@ namespace MultidimensionalArray {
 
   template <class T>
   ConstView<T> ConstView<T>::fix_dimension(size_t dimension,
-      size_t value) {
+      size_t value) const {
     assert(dimension < size().size());
     assert(size_[dimension] > value);
 
