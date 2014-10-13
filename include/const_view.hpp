@@ -52,6 +52,7 @@ namespace MultidimensionalArray {
       Array<T> const* array_;
       ConstArray<T> const* carray_;
       Size size_;
+      bool original_view_;
       Size::SizeType dimension_map_;
       Size::SizeType offset_, gain_, fixed_values_;
       std::vector<bool> fixed_flag_;

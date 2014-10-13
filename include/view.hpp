@@ -68,6 +68,7 @@ namespace MultidimensionalArray {
 
       Array<T>& array_;
       Size size_;
+      bool original_view_;
       Size::SizeType dimension_map_;
       Size::SizeType offset_, gain_, fixed_values_;
       std::vector<bool> fixed_flag_;

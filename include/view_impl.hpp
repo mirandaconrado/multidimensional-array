@@ -8,6 +8,7 @@ namespace MultidimensionalArray {
   View<T>::View(View const& other):
     array_(other.array_),
     size_(other.size_),
+    original_view_(other.original_view_),
     dimension_map_(other.dimension_map_),
     offset_(other.offset_),
     gain_(other.gain_),
@@ -18,6 +19,7 @@ namespace MultidimensionalArray {
   View<T>::View(View&& other):
     array_(other.array_),
     size_(std::move(other.size_)),
+    original_view_(std::move(other.original_view_)),
     dimension_map_(std::move(other.dimension_map_)),
     offset_(std::move(other.offset_)),
     gain_(std::move(other.gain_)),
@@ -88,28 +90,40 @@ namespace MultidimensionalArray {
   template <class... Args>
   T& View<T>::operator()(Args const&... args) {
     assert(array_.get_pointer() != nullptr);
-    return array_.get_pointer()[get_position_variadic(args...)];
+    if (original_view_)
+      return array_.get_pointer()[size_.get_position_variadic(args...)];
+    else
+      return array_.get_pointer()[get_position_variadic(args...)];
   }
 
   template <class T>
   template <class... Args>
   T const& View<T>::operator()(Args const&... args) const {
     assert(array_.get_pointer() != nullptr);
-    return array_.get_pointer()[get_position_variadic(args...)];
+    if (original_view_)
+      return array_.get_pointer()[size_.get_position_variadic(args...)];
+    else
+      return array_.get_pointer()[get_position_variadic(args...)];
   }
 
   template <class T>
   T& View<T>::get(Size::SizeType const& index) {
     assert(index.size() == size().size());
     assert(array_.get_pointer() != nullptr);
-    return array_.get_pointer()[get_position(&index[0])];
+    if (original_view_)
+      return array_.get_pointer()[size_.get_position(index)];
+    else
+      return array_.get_pointer()[get_position(&index[0])];
   }
 
   template <class T>
   T const& View<T>::get(Size::SizeType const& index) const {
     assert(index.size() == size().size());
     assert(array_.get_pointer() != nullptr);
-    return array_.get_pointer()[get_position(&index[0])];
+    if (original_view_)
+      return array_.get_pointer()[size_.get_position(index)];
+    else
+      return array_.get_pointer()[get_position(&index[0])];
   }
 
   template <class T>
@@ -118,6 +132,7 @@ namespace MultidimensionalArray {
     assert(size_[dimension] > value);
 
     View<T> ret(*this);
+    ret.original_view_ = false;
     ret.size_[dimension] -= value;
     ret.offset_[dimension_map_[dimension]] +=
       value * gain_[dimension_map_[dimension]];
@@ -131,6 +146,7 @@ namespace MultidimensionalArray {
     assert(value > 0);
 
     View<T> ret(*this);
+    ret.original_view_ = false;
     ret.size_[dimension] = value;
     return ret;
   }
@@ -141,6 +157,7 @@ namespace MultidimensionalArray {
     assert(value > 0);
 
     View<T> ret(*this);
+    ret.original_view_ = false;
     ret.size_[dimension] = (ret.size_[dimension] + value - 1)/value;
     ret.gain_[dimension_map_[dimension]] *= value;
     return ret;
@@ -152,6 +169,7 @@ namespace MultidimensionalArray {
     assert(size_[dimension] > value);
 
     View<T> ret(*this);
+    ret.original_view_ = false;
     Size::SizeType temp(ret.size_.get_size());
     temp.erase(temp.begin()+dimension);
     ret.size_.set_size(std::move(temp));
@@ -169,6 +187,7 @@ namespace MultidimensionalArray {
   View<T>::View(Array<T>& array):
     array_(array),
     size_(array.get_size()),
+    original_view_(true),
     dimension_map_(size().size()),
     offset_(size().size(), 0),
     gain_(size().size(), 1),
