@@ -16,6 +16,8 @@ namespace MultidimensionalArray {
   template <class T>
   class ConstView {
     public:
+      typedef T value_type;
+
       ConstView(ConstView const& other);
       ConstView(ConstView&& other);
 

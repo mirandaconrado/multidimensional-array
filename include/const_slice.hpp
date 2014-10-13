@@ -10,6 +10,8 @@ namespace MultidimensionalArray {
   template <class T>
   class ConstSlice {
     public:
+      typedef T value_type;
+
       ConstSlice(ConstArray<T>& array, unsigned int dimension);
 
       Size::SizeType const& left_size() const { return left_size_.get_size(); }

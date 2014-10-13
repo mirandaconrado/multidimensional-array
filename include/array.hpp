@@ -21,6 +21,8 @@ namespace MultidimensionalArray {
   template <class T>
   class Array {
     public:
+      typedef T value_type;
+
       Array();
 
       Array(Array const& other);
