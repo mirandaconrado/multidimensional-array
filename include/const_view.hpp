@@ -45,10 +45,6 @@ namespace MultidimensionalArray {
 
       T const* get_pointer() const;
 
-      template <class... Args>
-      size_t get_position_variadic(Args const&... args) const;
-      size_t get_position(Size::SizeType::value_type const* indexes) const;
-
       Array<T> const* array_;
       ConstArray<T> const* carray_;
       Size size_;

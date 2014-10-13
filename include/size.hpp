@@ -184,6 +184,60 @@ namespace MultidimensionalArray {
         return position;
       }
 
+      template <class... Args>
+      size_t get_view_position_variadic(SizeType const& dimension_map,
+          SizeType const& offset, SizeType const& gain,
+          SizeType const& fixed_values, std::vector<bool> const& fixed_flag,
+          SizeType const& original_size, Args const&... args) const {
+        SizeType::value_type index[] =
+        {static_cast<SizeType::value_type>(args)...};
+        return get_view_position(dimension_map, offset, gain, fixed_values,
+            fixed_flag, original_size, index, sizeof...(args));
+      }
+      size_t get_view_position(SizeType const& dimension_map,
+          SizeType const& offset, SizeType const& gain,
+          SizeType const& fixed_values, std::vector<bool> const& fixed_flag,
+          SizeType const& original_size, SizeType const& index) const {
+        return get_view_position(dimension_map, offset, gain, fixed_values,
+            fixed_flag, original_size, &index[0], index.size());
+      }
+      size_t get_view_position(SizeType const& dimension_map,
+          SizeType const& offset, SizeType const& gain,
+          SizeType const& fixed_values, std::vector<bool> const& fixed_flag,
+          SizeType const& original_size, SizeType::value_type const* index,
+          size_t n_elements) const {
+        assert(index != nullptr);
+        assert(check_index(index, n_elements));
+
+        size_t indexes_dimension = 0, indexes_i = 0;
+
+        size_t position = 0;
+        if (fixed_flag[indexes_dimension])
+          position = fixed_values[indexes_dimension];
+        else
+          position = index[indexes_i++] * gain[dimension_map[indexes_dimension]]
+            + offset[dimension_map[indexes_dimension]];
+        indexes_dimension++;
+
+        while (indexes_dimension < gain.size() &&
+            indexes_i < dimension_map.size()) {
+          position *= original_size[indexes_dimension];
+
+          if (fixed_flag[indexes_dimension])
+            position += fixed_values[indexes_dimension];
+          else
+            position +=
+              index[indexes_i++] * gain[dimension_map[indexes_dimension]]
+              + offset[dimension_map[indexes_dimension]];
+          indexes_dimension++;
+        }
+
+        assert(indexes_dimension == gain.size());
+        assert(indexes_i == dimension_map.size());
+
+        return position;
+      }
+
       const_iterator cbegin() const {
         return const_iterator(SizeType(size_.size(), 0), size_);
       }

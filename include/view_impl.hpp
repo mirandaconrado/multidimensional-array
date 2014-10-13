@@ -93,7 +93,10 @@ namespace MultidimensionalArray {
     if (original_view_)
       return array_.get_pointer()[size_.get_position_variadic(args...)];
     else
-      return array_.get_pointer()[get_position_variadic(args...)];
+      return
+        array_.get_pointer()[size_.get_view_position_variadic(dimension_map_,
+            offset_, gain_, fixed_values_, fixed_flag_, array_.size(),
+            args...)];
   }
 
   template <class T>
@@ -103,7 +106,10 @@ namespace MultidimensionalArray {
     if (original_view_)
       return array_.get_pointer()[size_.get_position_variadic(args...)];
     else
-      return array_.get_pointer()[get_position_variadic(args...)];
+      return
+        array_.get_pointer()[size_.get_view_position_variadic(dimension_map_,
+            offset_, gain_, fixed_values_, fixed_flag_, array_.size(),
+            args...)];
   }
 
   template <class T>
@@ -113,7 +119,8 @@ namespace MultidimensionalArray {
     if (original_view_)
       return array_.get_pointer()[size_.get_position(index)];
     else
-      return array_.get_pointer()[get_position(&index[0])];
+      return array_.get_pointer()[size_.get_view_position(dimension_map_,
+          offset_, gain_, fixed_values_, fixed_flag_, array_.size(), index)];
   }
 
   template <class T>
@@ -123,7 +130,8 @@ namespace MultidimensionalArray {
     if (original_view_)
       return array_.get_pointer()[size_.get_position(index)];
     else
-      return array_.get_pointer()[get_position(&index[0])];
+      return array_.get_pointer()[size_.get_view_position(dimension_map_,
+          offset_, gain_, fixed_values_, fixed_flag_, array_.size(), index)];
   }
 
   template <class T>
@@ -196,51 +204,6 @@ namespace MultidimensionalArray {
       for (size_t i = 0; i < size().size(); i++)
         dimension_map_[i] = i;
     }
-
-  template <class T>
-  template <class... Args>
-  size_t View<T>::get_position_variadic(Args const&... args) const {
-    assert(sizeof...(args) == size().size());
-    Size::SizeType::value_type indexes[] =
-    {static_cast<Size::SizeType::value_type>(args)...};
-
-    return get_position(indexes);
-  }
-
-  template <class T>
-  size_t View<T>::get_position(
-      Size::SizeType::value_type const* indexes) const {
-    assert(indexes != nullptr);
-    assert(size_.check_index(indexes, size().size()));
-
-    size_t indexes_dimension = 0, indexes_i = 0;
-
-    size_t position = 0;
-    if (fixed_flag_[indexes_dimension])
-      position = fixed_values_[indexes_dimension];
-    else
-      position = indexes[indexes_i++] * gain_[dimension_map_[indexes_dimension]]
-        + offset_[dimension_map_[indexes_dimension]];
-    indexes_dimension++;
-
-    while (indexes_dimension < gain_.size() &&
-        indexes_i < dimension_map_.size()) {
-      position *= array_.get_size()[indexes_dimension];
-
-      if (fixed_flag_[indexes_dimension])
-        position += fixed_values_[indexes_dimension];
-      else
-        position +=
-          indexes[indexes_i++] * gain_[dimension_map_[indexes_dimension]]
-          + offset_[dimension_map_[indexes_dimension]];
-      indexes_dimension++;
-    }
-
-    assert(indexes_dimension == gain_.size());
-    assert(indexes_i == dimension_map_.size());
-
-    return position;
-  }
 
   template <class T>
   template <class T2>

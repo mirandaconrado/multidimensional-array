@@ -59,7 +59,10 @@ namespace MultidimensionalArray {
     if (original_view_)
       return get_pointer()[size_.get_position_variadic(args...)];
     else
-      return get_pointer()[get_position_variadic(args...)];
+      return
+        get_pointer()[size_.get_view_position_variadic(dimension_map_,
+            offset_, gain_, fixed_values_, fixed_flag_,
+            (array_!=nullptr?array_->size():carray_->size()), args...)];
   }
 
   template <class T>
@@ -69,7 +72,9 @@ namespace MultidimensionalArray {
     if (original_view_)
       return get_pointer()[size_.get_position(index)];
     else
-      return get_pointer()[get_position(&index[0])];
+      return get_pointer()[size_.get_view_position(dimension_map_, offset_,
+          gain_, fixed_values_, fixed_flag_,
+          (array_!=nullptr?array_->size():carray_->size()), index)];
   }
 
   template <class T>
@@ -169,54 +174,6 @@ namespace MultidimensionalArray {
       return array_->get_pointer();
     else
       return carray_->get_pointer();
-  }
-
-  template <class T>
-  template <class... Args>
-  size_t ConstView<T>::get_position_variadic(Args const&... args) const {
-    assert(sizeof...(args) == size().size());
-    Size::SizeType::value_type indexes[] =
-    {static_cast<Size::SizeType::value_type>(args)...};
-
-    return get_position(indexes);
-  }
-
-  template <class T>
-  size_t ConstView<T>::get_position(
-      Size::SizeType::value_type const* indexes) const {
-    assert(indexes != nullptr);
-    assert(size_.check_index(indexes, size().size()));
-
-    size_t indexes_dimension = 0, indexes_i = 0;
-
-    size_t position = 0;
-    if (fixed_flag_[indexes_dimension])
-      position = fixed_values_[indexes_dimension];
-    else
-      position = indexes[indexes_i++] * gain_[dimension_map_[indexes_dimension]]
-        + offset_[dimension_map_[indexes_dimension]];
-    indexes_dimension++;
-
-    while (indexes_dimension < gain_.size() &&
-        indexes_i < dimension_map_.size()) {
-      if (array_ != nullptr)
-        position *= array_->get_size()[indexes_dimension];
-      else
-        position *= carray_->get_size()[indexes_dimension];
-
-      if (fixed_flag_[indexes_dimension])
-        position += fixed_values_[indexes_dimension];
-      else
-        position +=
-          indexes[indexes_i++] * gain_[dimension_map_[indexes_dimension]]
-          + offset_[dimension_map_[indexes_dimension]];
-      indexes_dimension++;
-    }
-
-    assert(indexes_dimension == gain_.size());
-    assert(indexes_i == dimension_map_.size());
-
-    return position;
   }
 };
 

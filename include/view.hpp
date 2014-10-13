@@ -55,10 +55,6 @@ namespace MultidimensionalArray {
 
       View(Array<T>& array);
 
-      template <class... Args>
-      size_t get_position_variadic(Args const&... args) const;
-      size_t get_position(Size::SizeType::value_type const* indexes) const;
-
       template <class T2>
       void copy(T2 const* other);
       template <class T2>
