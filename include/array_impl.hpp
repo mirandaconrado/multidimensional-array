@@ -11,16 +11,16 @@ namespace MultidimensionalArray {
 
   template <class T>
   Array<T>::Array(T const& other):
-    values_(new T[1]),
     size_({1}),
+    values_(new T[1]),
     deallocate_on_destruction_(true) {
       values_[0] = other;
     }
 
   template <class T>
   Array<T>::Array(T&& other):
-    values_(new T[1]),
     size_({1}),
+    values_(new T[1]),
     deallocate_on_destruction_(true) {
       values_[0] = std::move(other);
     }
