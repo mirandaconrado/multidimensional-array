@@ -25,6 +25,9 @@ namespace MultidimensionalArray {
 
       Array();
 
+      Array(T const& other);
+      Array(T&& other);
+
       Array(Array const& other);
       Array(Array&& other);
       template <class T2>
