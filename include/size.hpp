@@ -1,5 +1,5 @@
-#ifndef __MULTIDIMENSIONAL_ARRAY__values_HPP__
-#define __MULTIDIMENSIONAL_ARRAY__values_HPP__
+#ifndef __MULTIDIMENSIONAL_ARRAY__SIZE_HPP__
+#define __MULTIDIMENSIONAL_ARRAY__SIZE_HPP__
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <cassert>
