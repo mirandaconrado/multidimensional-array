@@ -5,7 +5,7 @@
 
 namespace MultidimensionalArray {
   template <class T>
-  ConstSlice<T>::ConstSlice(ConstArray<T>& array, unsigned int dimension):
+  ConstSlice<T>::ConstSlice(ConstArray<T> const& array, unsigned int dimension):
     array_(array) {
     // Can't slice things that only have one dimension, for instance
     assert(dimension+1 < array.size().size());

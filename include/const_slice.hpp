@@ -12,7 +12,7 @@ namespace MultidimensionalArray {
     public:
       typedef T value_type;
 
-      ConstSlice(ConstArray<T>& array, unsigned int dimension);
+      ConstSlice(ConstArray<T> const& array, unsigned int dimension);
 
       Size::SizeType const& left_size() const { return left_size_.get_size(); }
       Size const& get_left_size() const { return left_size_; }
@@ -29,7 +29,7 @@ namespace MultidimensionalArray {
       ConstSlice(ConstSlice<T> const& other);
       ConstSlice const& operator=(ConstSlice<T> const& other);
 
-      ConstArray<T>& array_;
+      ConstArray<T> const& array_;
       Size left_size_, right_size_;
   };
 };
