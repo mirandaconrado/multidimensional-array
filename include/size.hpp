@@ -78,7 +78,9 @@ namespace MultidimensionalArray {
           SizeType values_, size_;
       };
 
-      Size() { }
+      Size():
+        size_({}),
+        total_size_(0) { }
       Size(Size const& other):
         size_(other.size_),
         total_size_(other.total_size_) { }
