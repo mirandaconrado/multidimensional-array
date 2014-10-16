@@ -9,6 +9,7 @@ namespace MultidimensionalArray {
     array_(array) {
     // Can't slice things that only have one dimension, for instance
     assert(dimension+1 < array.size().size());
+    assert(dimension < array.size().size());
 
     Size::SizeType left, right;
 
