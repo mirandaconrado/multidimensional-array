@@ -148,6 +148,23 @@ TEST_F(ArrayTest, SetPointer) {
   }
 }
 
+TEST_F(ArrayTest, Swap) {
+  Array<int> array(sizes, values), array2;
+
+  array2.swap(array);
+
+  size_t index = 0;
+  for (Size::SizeType::value_type i1 = 0; i1 < 2; i1++)
+    for (Size::SizeType::value_type i2 = 0; i2 < 3; i2++)
+      for (Size::SizeType::value_type i3 = 0; i3 < 4; i3++)
+        for (Size::SizeType::value_type i4 = 0; i4 < 5; i4++) {
+          EXPECT_EQ(index, array2(i1, i2, i3, i4));
+          index++;
+        }
+
+  EXPECT_EQ(0, array.size().size());
+}
+
 TEST_F(ArrayTest, ValueAccess) {
   Array<int> array(sizes, values);
 

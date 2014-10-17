@@ -36,6 +36,9 @@ namespace MultidimensionalArray {
 
       ~ConstArray();
 
+      void swap(ConstArray& other);
+      void swap(ConstArray&& other);
+
       ConstView<T> view();
 
       bool resize(Size const& size);

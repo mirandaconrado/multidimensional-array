@@ -57,6 +57,9 @@ namespace MultidimensionalArray {
 
       ~Array();
 
+      void swap(Array& other);
+      void swap(Array&& other);
+
       Array const& operator=(Array const& other);
       Array const& operator=(Array&& other);
       template <class T2>

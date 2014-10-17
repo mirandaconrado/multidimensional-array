@@ -153,6 +153,36 @@ namespace MultidimensionalArray {
   }
 
   template <class T>
+  void Array<T>::swap(Array& other) {
+    Size temp1 = std::move(other.size_);
+    other.size_ = size_;
+    size_ = std::move(temp1);
+
+    T* temp2 = other.values_;
+    other.values_ = values_;
+    values_ = temp2;
+
+    bool temp3 = other.deallocate_on_destruction_;
+    other.deallocate_on_destruction_ = deallocate_on_destruction_;
+    deallocate_on_destruction_ = temp3;
+  }
+
+  template <class T>
+  void Array<T>::swap(Array&& other) {
+    Size temp1 = std::move(other.size_);
+    other.size_ = size_;
+    size_ = std::move(temp1);
+
+    T* temp2 = other.values_;
+    other.values_ = values_;
+    values_ = temp2;
+
+    bool temp3 = other.deallocate_on_destruction_;
+    other.deallocate_on_destruction_ = deallocate_on_destruction_;
+    deallocate_on_destruction_ = temp3;
+  }
+
+  template <class T>
   Array<T> const& Array<T>::operator=(Array const& other) {
     assert(size_.same(other.get_size()));
     copy(other.values_);
