@@ -206,11 +206,14 @@ namespace MultidimensionalArray {
   Array<T> const& Array<T>::operator=(Array&& other) {
     assert(size_.same(other.get_size()));
 
-    if (values_ != nullptr)
-      delete[] values_;
+    T* temp_pointer = other.values_;
+    other.values_ = values_;
+    values_ = temp_pointer;
 
-    values_ = other.values_;
-    other.values_ = nullptr;
+    bool temp_deallocate = other.deallocate_on_destruction_;
+    other.deallocate_on_destruction_ = deallocate_on_destruction_;
+    deallocate_on_destruction_ = temp_deallocate;
+
     return *this;
   }
 
