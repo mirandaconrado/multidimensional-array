@@ -94,7 +94,7 @@ TEST_F(ArrayTest, AssignmentOperatorWithMove) {
 }
 
 TEST_F(ArrayTest, CopyConstructor) {
-  Array<int> array(sizes, values), array2(array);
+  Array<int> array(sizes, (int const*)values), array2(array);
 
   check_values(array.get_pointer());
   check_values(array2.get_pointer());
@@ -122,7 +122,7 @@ TEST_F(ArrayTest, MoveConstructor) {
 }
 
 TEST_F(ArrayTest, Resize) {
-  Array<int> array(sizes, values);
+  Array<int> array(sizes, (int const*)values);
 
   EXPECT_TRUE(array.resize({5, 4, 3, 2}));
 
