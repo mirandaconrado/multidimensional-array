@@ -128,6 +128,13 @@ namespace MultidimensionalArray {
     }
 
   template <class T>
+  Array<T>::Array(Size const& size, T* other, bool responsible_for_deleting):
+    Array(),
+    size_(size),
+    values_(other),
+    deallocate_on_destruction_(responsible_for_deleting) { }
+
+  template <class T>
   template <class T2>
   Array<T>::Array(Size const& size, T2 const* other):
     Array(size) {
@@ -141,6 +148,11 @@ namespace MultidimensionalArray {
   template <class T>
   Array<T>::Array(Size::SizeType const& size, T const* other):
     Array(Size(size), other) { }
+
+  template <class T>
+  Array<T>::Array(Size::SizeType const& size, T* other,
+      bool responsible_for_deleting):
+    Array(Size(size), other, responsible_for_deleting) { }
 
   template <class T>
   template <class T2>

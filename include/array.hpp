@@ -47,11 +47,14 @@ namespace MultidimensionalArray {
 
       Array(Size const& size);
       Array(Size const& size, T const* other);
+      Array(Size const& size, T* other, bool responsible_for_deleting = false);
       template <class T2>
       Array(Size const& size, T2 const* other);
 
       Array(Size::SizeType const& size);
       Array(Size::SizeType const& size, T const* other);
+      Array(Size::SizeType const& size, T* other,
+          bool responsible_for_deleting = false);
       template <class T2>
       Array(Size::SizeType const& size, T2 const* other);
 
