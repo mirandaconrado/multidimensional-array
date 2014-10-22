@@ -21,7 +21,7 @@ TEST(SizeTest, Accessors) {
   EXPECT_FALSE(size.same(Size::SizeType(
           {2, 3, 4, 6})));
 
-  EXPECT_EQ(2*3*4*5, size.get_total_size());
+  EXPECT_EQ(2*3*4*5, size.total_size());
 }
 
 TEST(SizeTest, Iterator) {

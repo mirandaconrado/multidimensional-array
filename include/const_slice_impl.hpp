@@ -25,11 +25,11 @@ namespace MultidimensionalArray {
 
   template <class T>
   ConstArray<T> ConstSlice<T>::get_element(size_t index) {
-    assert(index < get_total_left_size());
+    assert(index < total_left_size());
 
     ConstArray<T> ret;
     ret.size_ = right_size_;
-    ret.values_ = &array_.get_pointer()[get_total_right_size() * index];
+    ret.values_ = &array_.get_pointer()[total_right_size() * index];
     ret.deallocate_on_destruction_ = false;
 
     return ret;
@@ -37,11 +37,11 @@ namespace MultidimensionalArray {
 
   template <class T>
   ConstArray<T> const ConstSlice<T>::get_element(size_t index) const {
-    assert(index < get_total_left_size());
+    assert(index < total_left_size());
 
     ConstArray<T> ret;
     ret.size_ = right_size_;
-    ret.values_ = &array_.get_pointer()[get_total_right_size() * index];
+    ret.values_ = &array_.get_pointer()[total_right_size() * index];
     ret.deallocate_on_destruction_ = false;
 
     return ret;

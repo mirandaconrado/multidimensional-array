@@ -24,9 +24,8 @@ namespace MultidimensionalArray {
       ConstView(View<T> const& other);
       ConstView(View<T>&& other);
 
-      Size::SizeType const& size() const { return size_.get_size(); }
-      Size const& get_size() const { return size_; }
-      size_t get_total_size() const { return size_.get_total_size(); }
+      Size const& size() const { return size_; }
+      size_t total_size() const { return size_.total_size(); }
 
       template <class... Args>
       T const& operator()(Args const&... args) const;

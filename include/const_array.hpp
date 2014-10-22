@@ -30,10 +30,6 @@ namespace MultidimensionalArray {
       ConstArray(Size const& size, T const* ptr,
           bool responsible_for_deleting = false);
 
-      ConstArray(Size::SizeType const& size);
-      ConstArray(Size::SizeType const& size, T const* ptr,
-          bool responsible_for_deleting = false);
-
       ~ConstArray();
 
       void swap(ConstArray& other);
@@ -42,11 +38,9 @@ namespace MultidimensionalArray {
       ConstView<T> view();
 
       bool resize(Size const& size);
-      bool resize(Size::SizeType const& size);
 
-      Size::SizeType const& size() const { return size_.get_size(); }
-      Size const& get_size() const { return size_; }
-      size_t get_total_size() const { return size_.get_total_size(); }
+      Size const& size() const { return size_; }
+      size_t total_size() const { return size_.total_size(); }
 
       void set_pointer(T const* ptr, bool responsible_for_deleting = false);
       T const* get_pointer() const { return values_; }

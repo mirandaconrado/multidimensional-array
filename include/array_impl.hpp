@@ -31,8 +31,8 @@ namespace MultidimensionalArray {
     values_(nullptr),
     deallocate_on_destruction_(other.deallocate_on_destruction_) {
       if (other.deallocate_on_destruction_) {
-        if (get_total_size() > 0) {
-          values_ = new T[get_total_size()];
+        if (total_size() > 0) {
+          values_ = new T[total_size()];
           copy(other.values_);
         }
       }
@@ -54,10 +54,10 @@ namespace MultidimensionalArray {
   template <class T2>
   Array<T>::Array(Array<T2> const& other):
     Array() {
-      size_ = other.get_size();
+      size_ = other.size();
       deallocate_on_destruction_ = true;
-      if (get_total_size() > 0)
-        values_ = new T[get_total_size()];
+      if (total_size() > 0)
+        values_ = new T[total_size()];
 
       copy(other.get_pointer());
     }
@@ -67,8 +67,8 @@ namespace MultidimensionalArray {
     size_(other.size_),
     values_(nullptr),
     deallocate_on_destruction_(true) {
-      if (get_total_size() > 0) {
-        values_ = new T[get_total_size()];
+      if (total_size() > 0) {
+        values_ = new T[total_size()];
         copy(other.values_);
       }
     }
@@ -79,8 +79,8 @@ namespace MultidimensionalArray {
     size_(other.size_),
     values_(nullptr),
     deallocate_on_destruction_(true) {
-      if (get_total_size() > 0) {
-        values_ = new T[get_total_size()];
+      if (total_size() > 0) {
+        values_ = new T[total_size()];
         copy(other.values_);
       }
     }
@@ -117,8 +117,8 @@ namespace MultidimensionalArray {
       size_ = size;
       deallocate_on_destruction_ = true;
 
-      if (get_total_size() > 0)
-        values_ = new T[get_total_size()];
+      if (total_size() > 0)
+        values_ = new T[total_size()];
     }
 
   template <class T>
@@ -141,24 +141,6 @@ namespace MultidimensionalArray {
     Array(size) {
       copy(other);
     }
-
-  template <class T>
-  Array<T>::Array(Size::SizeType const& size):
-    Array(Size(size)) { }
-
-  template <class T>
-  Array<T>::Array(Size::SizeType const& size, T const* other):
-    Array(Size(size), other) { }
-
-  template <class T>
-  Array<T>::Array(Size::SizeType const& size, T* other,
-      bool responsible_for_deleting):
-    Array(Size(size), other, responsible_for_deleting) { }
-
-  template <class T>
-  template <class T2>
-  Array<T>::Array(Size::SizeType const& size, T2 const* other):
-    Array(Size(size), other) { }
 
   template <class T>
   Array<T>::~Array() {
@@ -282,7 +264,7 @@ namespace MultidimensionalArray {
 
   template <class T>
   bool Array<T>::resize(Size const& size, bool allow_allocation) {
-    if (size.get_total_size() != get_total_size()) {
+    if (size.total_size() != total_size()) {
       if (!deallocate_on_destruction_)
         return false;
 
@@ -290,18 +272,13 @@ namespace MultidimensionalArray {
         delete[] values_;
         values_ = nullptr;
       }
-      if (size.get_total_size() > 0 && allow_allocation)
-        values_ = new T[size.get_total_size()];
+      if (size.total_size() > 0 && allow_allocation)
+        values_ = new T[size.total_size()];
     }
 
     size_ = size;
 
     return true;
-  }
-
-  template <class T>
-  bool Array<T>::resize(Size::SizeType const& size, bool allow_allocation) {
-    return resize(Size(size), allow_allocation);
   }
 
   template <class T>
@@ -346,7 +323,7 @@ namespace MultidimensionalArray {
   void Array<T>::copy(T2 const* other) {
     assert(values_ != nullptr);
     assert(other != nullptr);
-    for (size_t i = 0; i < get_total_size(); i++)
+    for (size_t i = 0; i < total_size(); i++)
       values_[i] = other[i];
   }
 
@@ -354,9 +331,9 @@ namespace MultidimensionalArray {
   template <class T2>
   void Array<T>::copy(View<T2> const& other) {
     assert(values_ != nullptr);
-    auto it1 = other.get_size().cbegin();
-    auto it2 = other.get_size().cend();
-    for (size_t i = 0; i < get_total_size() && it1 != it2; i++, ++it1)
+    auto it1 = other.size().cbegin();
+    auto it2 = other.size().cend();
+    for (size_t i = 0; i < total_size() && it1 != it2; i++, ++it1)
       values_[i] = other.get(*it1);
   }
 
@@ -364,9 +341,9 @@ namespace MultidimensionalArray {
   template <class T2>
   void Array<T>::copy(ConstView<T2> const& other) {
     assert(values_ != nullptr);
-    auto it1 = other.get_size().cbegin();
-    auto it2 = other.get_size().cend();
-    for (size_t i = 0; i < get_total_size() && it1 != it2; i++, ++it1)
+    auto it1 = other.size().cbegin();
+    auto it2 = other.size().cend();
+    for (size_t i = 0; i < total_size() && it1 != it2; i++, ++it1)
       values_[i] = other.get(*it1);
   }
 

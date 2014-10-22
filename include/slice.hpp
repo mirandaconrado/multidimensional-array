@@ -14,13 +14,11 @@ namespace MultidimensionalArray {
 
       Slice(Array<T>& array, unsigned int dimension);
 
-      Size::SizeType const& left_size() const { return left_size_.get_size(); }
-      Size const& get_left_size() const { return left_size_; }
-      size_t get_total_left_size() const { return left_size_.get_total_size(); }
+      Size const& left_size() const { return left_size_; }
+      size_t total_left_size() const { return left_size_.total_size(); }
 
-      Size::SizeType const& right_size() const { return right_size_.get_size(); }
-      Size const& get_right_size() const { return right_size_; }
-      size_t get_total_right_size() const { return right_size_.get_total_size(); }
+      Size const& right_size() const { return right_size_; }
+      size_t total_right_size() const { return right_size_.total_size(); }
 
       Array<T> get_element(size_t index);
       Array<T> const get_element(size_t index) const;

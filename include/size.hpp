@@ -100,6 +100,8 @@ namespace MultidimensionalArray {
 
           compute_total_size();
         }
+      Size(std::initializer_list<unsigned int> list):
+        size_(list) { compute_total_size(); }
 
       Size const& operator=(Size const& other) {
         size_ = other.size_;
@@ -112,8 +114,12 @@ namespace MultidimensionalArray {
         return *this;
       }
 
-      size_t get_total_size() const { return total_size_; }
-      SizeType const& get_size() const { return size_; }
+      operator SizeType() { return size_; }
+      operator SizeType() const { return size_; }
+
+      SizeType::size_type size() const { return size_.size(); }
+      size_t total_size() const { return total_size_; }
+
       void set_size(SizeType const& size) { size_ = size; compute_total_size(); }
       void set_size(SizeType&& size) { size_.swap(size); compute_total_size(); }
 
@@ -250,6 +256,13 @@ namespace MultidimensionalArray {
         end[0] = size_[0];
 
         return const_iterator(end, size_);
+      }
+
+      void swap(Size& other) {
+        size_.swap(other.size_);
+        size_t temp = other.total_size_;
+        other.total_size_ = total_size_;
+        total_size_ = temp;
       }
 
     private:

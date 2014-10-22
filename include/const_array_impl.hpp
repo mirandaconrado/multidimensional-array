@@ -52,15 +52,6 @@ namespace MultidimensionalArray {
     }
 
   template <class T>
-  ConstArray<T>::ConstArray(Size::SizeType const& size):
-    ConstArray(Size(size)) { }
-
-  template <class T>
-  ConstArray<T>::ConstArray(Size::SizeType const& size, T const* ptr,
-      bool responsible_for_deleting):
-    ConstArray(Size(size), ptr, responsible_for_deleting) { }
-
-  template <class T>
   ConstArray<T>::~ConstArray() {
     cleanup();
   }
@@ -102,17 +93,12 @@ namespace MultidimensionalArray {
 
   template <class T>
   bool ConstArray<T>::resize(Size const& size) {
-    if (size.get_total_size() != get_total_size())
+    if (size.total_size() != total_size())
       return false;
 
     size_ = size;
 
     return true;
-  }
-
-  template <class T>
-  bool ConstArray<T>::resize(Size::SizeType const& size) {
-    return resize(Size(size));
   }
 
   template <class T>

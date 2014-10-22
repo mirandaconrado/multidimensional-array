@@ -125,7 +125,7 @@ namespace MultidimensionalArray {
 
     ConstView<T> ret(*this);
     ret.original_view_ = false;
-    Size::SizeType temp(ret.size_.get_size());
+    Size::SizeType temp(ret.size_);
     temp.erase(temp.begin()+dimension);
     ret.size_.set_size(std::move(temp));
     ret.dimension_map_.erase(ret.dimension_map_.begin()+dimension);
@@ -142,7 +142,7 @@ namespace MultidimensionalArray {
   ConstView<T>::ConstView(Array<T> const& array):
     array_(&array),
     carray_(nullptr),
-    size_(array.get_size()),
+    size_(array.size()),
     original_view_(true),
     dimension_map_(size().size()),
     offset_(size().size(), 0),
@@ -157,7 +157,7 @@ namespace MultidimensionalArray {
   ConstView<T>::ConstView(ConstArray<T> const& array):
     array_(nullptr),
     carray_(&array),
-    size_(array.get_size()),
+    size_(array.size()),
     original_view_(true),
     dimension_map_(size().size()),
     offset_(size().size(), 0),

@@ -51,13 +51,6 @@ namespace MultidimensionalArray {
       template <class T2>
       Array(Size const& size, T2 const* other);
 
-      Array(Size::SizeType const& size);
-      Array(Size::SizeType const& size, T const* other);
-      Array(Size::SizeType const& size, T* other,
-          bool responsible_for_deleting = false);
-      template <class T2>
-      Array(Size::SizeType const& size, T2 const* other);
-
       ~Array();
 
       void swap(Array& other);
@@ -81,11 +74,9 @@ namespace MultidimensionalArray {
       ConstView<T> view() const;
 
       bool resize(Size const& size, bool allow_allocation = true);
-      bool resize(Size::SizeType const& size, bool allow_allocation = true);
 
-      Size::SizeType const& size() const { return size_.get_size(); }
-      Size const& get_size() const { return size_; }
-      size_t get_total_size() const { return size_.get_total_size(); }
+      Size const& size() const { return size_; }
+      size_t total_size() const { return size_.total_size(); }
 
       void set_pointer(T* p, bool responsible_for_deleting = true);
       T* get_pointer() { return values_; }
