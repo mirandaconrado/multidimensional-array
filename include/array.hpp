@@ -3,8 +3,6 @@
 
 #include "size.hpp"
 
-#include <initializer_list>
-
 namespace MultidimensionalArray {
   template <class T>
   class ConstArray;
