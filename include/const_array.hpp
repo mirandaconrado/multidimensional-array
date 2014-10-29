@@ -51,6 +51,7 @@ namespace MultidimensionalArray {
       T const& get(Size::SizeType const& index) const;
 
     private:
+      friend class Array<T>;
       friend class ConstSlice<T>;
 
       void cleanup();
